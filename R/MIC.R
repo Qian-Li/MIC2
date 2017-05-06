@@ -52,7 +52,7 @@
 #'   }
 #'   ## 1 1 1
 #' }
-#'
+#' @export
 
 MIC <- function(data, K, nit, thin = 1, drop=T){
   # Input checks:
