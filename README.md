@@ -12,6 +12,7 @@ See our manuscript for more details!
 
 Time series simulation:
 ```r
+library(MIC2)
 ts_sim <- MIC_sim(alpha = 0.9, nsub = 3, segs = 10, fs = 200)
 ```
 
