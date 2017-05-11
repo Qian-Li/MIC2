@@ -3,6 +3,8 @@
 
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
+#include <cmath>
+#include <math.h>
 //
 using namespace arma;
 using namespace Rcpp;

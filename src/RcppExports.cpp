@@ -20,3 +20,58 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// specParzen
+arma::vec specParzen(arma::vec const& ts, int lag, int const& maxf, int const& outn);
+RcppExport SEXP MIC2_specParzen(SEXP tsSEXP, SEXP lagSEXP, SEXP maxfSEXP, SEXP outnSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec const& >::type ts(tsSEXP);
+    Rcpp::traits::input_parameter< int >::type lag(lagSEXP);
+    Rcpp::traits::input_parameter< int const& >::type maxf(maxfSEXP);
+    Rcpp::traits::input_parameter< int const& >::type outn(outnSEXP);
+    rcpp_result_gen = Rcpp::wrap(specParzen(ts, lag, maxf, outn));
+    return rcpp_result_gen;
+END_RCPP
+}
+// SpecSim
+arma::cube SpecSim(arma::cube const& ts, int lag, int const& wn, int const& win, int const& overlap, int const& specN);
+RcppExport SEXP MIC2_SpecSim(SEXP tsSEXP, SEXP lagSEXP, SEXP wnSEXP, SEXP winSEXP, SEXP overlapSEXP, SEXP specNSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::cube const& >::type ts(tsSEXP);
+    Rcpp::traits::input_parameter< int >::type lag(lagSEXP);
+    Rcpp::traits::input_parameter< int const& >::type wn(wnSEXP);
+    Rcpp::traits::input_parameter< int const& >::type win(winSEXP);
+    Rcpp::traits::input_parameter< int const& >::type overlap(overlapSEXP);
+    Rcpp::traits::input_parameter< int const& >::type specN(specNSEXP);
+    rcpp_result_gen = Rcpp::wrap(SpecSim(ts, lag, wn, win, overlap, specN));
+    return rcpp_result_gen;
+END_RCPP
+}
+// EigLap
+arma::cube EigLap(arma::cube  const& data, int         const& D, bool        const& normal);
+RcppExport SEXP MIC2_EigLap(SEXP dataSEXP, SEXP DSEXP, SEXP normalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::cube  const& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int         const& >::type D(DSEXP);
+    Rcpp::traits::input_parameter< bool        const& >::type normal(normalSEXP);
+    rcpp_result_gen = Rcpp::wrap(EigLap(data, D, normal));
+    return rcpp_result_gen;
+END_RCPP
+}
+// EigLapSph
+arma::cube EigLapSph(arma::cube  const& data, int         const& D);
+RcppExport SEXP MIC2_EigLapSph(SEXP dataSEXP, SEXP DSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::cube  const& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int         const& >::type D(DSEXP);
+    rcpp_result_gen = Rcpp::wrap(EigLapSph(data, D));
+    return rcpp_result_gen;
+END_RCPP
+}

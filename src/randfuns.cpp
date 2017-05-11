@@ -23,6 +23,10 @@ arma::mat mrmultinom(arma::mat const &llm){
         samp(ii,jj) = (int) 1;
         break;
       } else ii++;
+      if(ii >= llm.n_rows){
+        samp(ii-1, jj) = (int) 1;
+        break;
+      }
     }
   }
   return samp;

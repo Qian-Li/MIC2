@@ -335,7 +335,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // --------------------------------------------------------------------------
         vec tempi = arma::conv_to< vec >::from(mpi);
         rowvec mpij = mixpr(tempi, par.beta(sub)(ie));
-        mpij[0] = 1-accu(mpij(span(1,K-1)));
+        mpij[0] = 1.0 - arma::accu(mpij(span(1,K-1)));
         // --------------------------------------------------------------------------
         // EPmodule 2: NIG | L, data, pr
         // --------------------------------------------------------------------------
@@ -358,8 +358,8 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // EPmodule 5: ICs: ll_c(conditional|L); ll_i(integrated); ll_ei (expected i)
         // --------------------------------------------------------------------------
         ll.fill(0.0);
-        for(uword k=0; k<K; k++){
-          ll.row(k) = epmodel.log_p(epdta, k);
+        for(uword ak=0; ak<K; ak++){
+          ll.row(ak) = epmodel.log_p(epdta, ak);
         }
         ll_c += accu(par.L(sub).slice(ie) % ll) / dta.np;
         ll_i += epmodel.avg_log_p(epdta);
@@ -409,7 +409,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     //-----------------------------------------------------------------------------
     // Output samples with 1/10 burn-in
     //-----------------------------------------------------------------------------
-    if((iter >= run/5) && (iter % thin == 0)){  // 1/5burn-in and thinning
+    if((iter >= run/5.0) && (iter % thin == 0)){  // 1/5burn-in and thinning
       OutputSample();
       //
       // Epoch output

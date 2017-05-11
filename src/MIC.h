@@ -3,6 +3,7 @@
 
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
+#include <cmath>
 #include <stdio.h>    //cout and file output
 #include <fstream>    //ofstream
 #include <iostream>   //cout

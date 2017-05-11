@@ -15,3 +15,19 @@ MIC_mcmc <- function(data, K, run, thin) {
     .Call('MIC2_MIC_mcmc', PACKAGE = 'MIC2', data, K, run, thin)
 }
 
+specParzen <- function(ts, lag, maxf, outn) {
+    .Call('MIC2_specParzen', PACKAGE = 'MIC2', ts, lag, maxf, outn)
+}
+
+SpecSim <- function(ts, lag, wn, win, overlap, specN) {
+    .Call('MIC2_SpecSim', PACKAGE = 'MIC2', ts, lag, wn, win, overlap, specN)
+}
+
+EigLap <- function(data, D, normal) {
+    .Call('MIC2_EigLap', PACKAGE = 'MIC2', data, D, normal)
+}
+
+EigLapSph <- function(data, D) {
+    .Call('MIC2_EigLapSph', PACKAGE = 'MIC2', data, D)
+}
+
