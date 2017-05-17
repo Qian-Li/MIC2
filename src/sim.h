@@ -10,5 +10,4 @@ using namespace arma;
 using namespace Rcpp;
 //
 
-
 #endif

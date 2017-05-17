@@ -54,6 +54,8 @@ spec.parzen <- function( x,
                          nn = 512){
   # Detrrend and Demean:
   x <- lm(x~c(1:length(x)))$residuals
+  # tapering
+  x <- spec.taper(x, p=0.1)
   # Compute the smoothed periodogram using a Parzen window
   if (a >= length(x)){
     warning("The lag a is too big, reset to 'length(x)-1'.")
@@ -62,4 +64,44 @@ spec.parzen <- function( x,
   freq = seq(0,0.5,length.out = nn+1)[-1]
   spec = specParzen(ts = x, lag = a, maxf = floor(length(x)/2), outn = nn)
   return(list(freq = freq, spec = spec))
+}
+
+#' Cluster Aligner
+#'
+#' \code{align} aligns two cluster assignments by a maximally concordant relabeling, implemented
+#'   based on Cpp function \code{\link{clustalign}}
+#'
+#' This aligner can take both \emph{vector} and \emph{matrix} clustering assignments, and aligns
+#'   the second assignment against the first assignment. It reshuffles the second assignment labels
+#'   such that two assignemnts are maximally matched. This procedure facilitates a direct and
+#'   fair comparision between two clustering result.
+#'
+#' @param refL vector or matrix, reference label.
+#' @param L vector or matrix, label to be aligned.
+#' @param type what type of input format: "\code{vec}" or "\code{mat}"
+#' @return \code{L}, aligned against \code{refL} with maximal concordance.
+#'
+#' @examples
+#' ref <- c(1:5)
+#' L <- c(5:1)
+#'
+#' align(ref, L, type = 'vec')
+#'
+#' @export
+
+align <- function(refL, L, type = 'vec'){
+  # if(type != 'vec' & type != 'mat') stop("Please input type as vec or mat")
+  if(!is.numeric(refL) | !is.numeric(L)) stop("refL and L needs to be numeric vector or matrix")
+  inType = pmatch(type,c("vec", "mat"), nomatch = 0)
+  if (inType == 1){
+    maxk = max(refL, L)
+    m1 = outer(c(1:maxk), refL, FUN = "==")+0 ; m2 = outer(c(1:maxk), L, FUN = "==")+0
+    clustalign(m2, m1)
+    L = as.vector(c(1:maxk) %*% m2)
+  } else if (inType == 2) {
+    clustalign(L,refL)
+  } else {
+    stop("Input type 'type' must be 'vec' or 'mat'.")
+  }
+  return(L)
 }

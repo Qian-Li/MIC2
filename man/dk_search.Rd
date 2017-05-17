@@ -4,7 +4,7 @@
 \alias{dk_search}
 \title{d-K Search Algorithm}
 \usage{
-dk_search(X_array, max_d = 10, n.iter, par.spectrum = c(50),
+dk_search(X_array, max_d = 10, n.iter, par.spec = c(100, 50, 100),
   par.win = c(1, 0))
 }
 \arguments{
@@ -14,15 +14,16 @@ dk_search(X_array, max_d = 10, n.iter, par.spectrum = c(50),
 
 \item{n.iter}{integer, number of iterations in \code{\link{MIC}} fitting}
 
-\item{par.spectrum}{vector, spectral estimation parameters in the order of \code{c(a, wn, nn)} see \code{\link{spec.parzen}}}
+\item{par.spec}{vector, spectral estimation parameters the same as \code{par.spec} in \code{\link{MIC_prep}}}
 
-\item{par.win}{vector, epoch smoothing parameters see \code{\link{ep_dismat}}}
+\item{par.win}{vector, epoch smoothing parameters see \code{\link{MIC_prep}} and \code{\link{SpecSim}}}
 }
 \value{
-A list of objects with the following components:
-  \item{\code{d}}{selected d}
-  \item{\code{K}}{selected K}
-  \item{\code{path}}{searching trajectory}
+A matrix of searching trajectory
+  \item{\code{d}}{dimensionality}
+  \item{\code{K}}{prespecified number of clusters}
+  \item{\code{BIC}}{BIC accordingly}
+  \item{\code{COH}}{Adjusted coherence accordingly}
 }
 \description{
 \code{dk_search} selects the optimal eigen-Laplacian dimensionality (\code{d}) and the number of clusters (\code{K})
@@ -40,7 +41,7 @@ Details of the procedure is available in our manuscript.
 
 
 ## d,K searching: \\strong{(approx. 9 mins running time)}
-  dk_search(sim$Data, max_d = 10, n.iter = 10000, par.spectrum = c(50,50,256))
+  dk_search(sim$Data, max_d = 10, n.iter = 10000, par.spec = c(50,50,256), par.win = c(4,2))
 
 }
 

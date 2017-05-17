@@ -45,7 +45,8 @@ void OutputSample()
     for(int r=0; r<K; r++){                           // mixing probs *3
       ss << par.pi(r) << " ";
     }
-    ss << par.ll_c << " "; ss << par.ll_i << " "; ss << par.ll_ei << "\n";
+    // ss << par.ll_c << " "; ss << par.ll_i << " "; ss << par.ll_ei << "\n";
+    ss << "\n";
     out1 << ss.str();                                 // log-likelihoods *3
   }
   {
@@ -98,16 +99,16 @@ void PostSummary(int const &nsims)
     }
     {// Get the S.best, clust_dist, pi's, ll's
       std::string line;   std::ifstream in1(fout_pop);
-      int counter = 0;    arma::mat postpars(nsims, k+3);
+      int counter = 0;    arma::mat postpars(nsims, k);
       double best_d = du;
       while (std::getline(in1, line)){
         std::istringstream iss(line);
         arma::vec clust(dta.np);
         for(int cli=0; cli<dta.np; cli++) iss >> clust[cli];
-        for(int cj=0; cj<(k+3);cj++) iss >> postpars(counter, cj);
+        for(int cj=0; cj<k;cj++) iss >> postpars(counter, cj);
         double dist = arma::norm((vec2adj(clust) - avg), "fro");
         dismat(counter,0) = dist;
-        if(dist < best_d && counter > nsims/10) {
+        if(dist < best_d && counter > nsims/10.0) {
           par.S = vec2ind(clust, k);    best_d = dist;
         }
         counter++;
@@ -115,7 +116,7 @@ void PostSummary(int const &nsims)
       in1.close();
       arma::rowvec means = arma::mean(postpars, 0);
       for(int kk=0; kk<k; kk++) par.pi(kk) = means(kk);
-      par.ll_c = means(k);  par.ll_i = means(k+1); par.ll_ei = means(k+2);
+      // par.ll_c = means(k);  par.ll_i = means(k+1); par.ll_ei = means(k+2);
       for(int cl=0; cl<k; cl++) cimat.col(cl) =
         postCI(postpars.col(cl), .90);
     }
@@ -146,7 +147,7 @@ void PostSummary(int const &nsims)
         iss >> postpars(ct2, ct1);
         double dist = arma::norm((vec2adj(clust) - avg.slice(ct1)), "fro");
         dismat(ct2,ct1+1) = dist;
-        if(dist < best_d[ct1] && ct2 > nsims/10){
+        if(dist < best_d[ct1] && ct2 > nsims/10.0){
           best_d(ct1) = dist;   par.C.slice(ct1) = vec2ind(clust, k);
         }
         ct1++;  if(ct1==dta.ns) {ct2++;}
@@ -192,7 +193,7 @@ void PostSummary(int const &nsims)
           iss >> postpars(ct2, ct1);
           double dist = arma::norm((vec2adj(clust) - avg.slice(ct1)), "fro");
           dismat(ct2,ct1+offset) = dist;
-          if(dist < best_d(ct1) && ct2 > nsims/10){
+          if(dist < best_d(ct1) && ct2 > nsims/10.0){
             best_d(ct1) = dist; par.L(sub).slice(ct1) = vec2ind(clust, k);
           }
           ct1++; if(ct1==dta.ne(sub)) ct2++;
@@ -275,7 +276,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     par.L(sub) = cube(K, dta.np, dta.ne(sub));  par.L(sub).fill(0);
   }
   // prior declaration:
-  pr.a0   = 1;                                          //NIG
+  pr.b0   = 0.001;                                       //NIG
   pr.a1   = 1;                   pr.b1   = 1;           //Tbeta
   pr.dir0 = vec(K);              pr.dir0.fill(1.0);     //Dirichlet
   pr.mu0  = field< vec >(dta.ns);                       //NIG-means
@@ -320,12 +321,12 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   // ----------------------------Gibbs Sampler---------------------------------------
   for(int iter=0; iter<run; iter++){
     par.pi /= std::accumulate(par.pi.begin(), par.pi.end(), 0.0);
-    double ll_c=0.0;    double ll_i=0.0;    double ll_ei=0.0;
+    // double ll_c=0.0;    double ll_i=0.0;    double ll_ei=0.0;
     // --------------------------Subject level---------------------------------------
     for(int sub=0; sub<dta.ns; sub++){
       subprior spr;
       spr.mu0     = pr.mu0(sub);      spr.dcov0  = pr.dcov0(sub);
-      spr.a0      = pr.a0;
+      spr.b0      = pr.b0;
       rowvec mpi = mixpr(par.pi, par.alpha(sub));
       // --------------------------Epoch level---------------------------------------
       for(int ie=0; ie<dta.ne(sub); ie++){
@@ -349,7 +350,9 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         for(uword ek=0; ek<K; ek++){
           ll.row(ek) = epmodel.log_p(epdta, ek);
         }
-        if(iter > 0) ll += nu_est(par.C.slice(sub), par.beta(sub)(ie));
+        // mat ll2 = ll; //for IC calculation
+        // if(iter % 100 > 0) ll += nu_est(par.C.slice(sub), par.beta(sub)(ie));
+        if(iter > 0) ll.each_col() += arma::log(mpij.t());
         // --------------------------------------------------------------------------
         // EPmodule 4: L | gmm_probs
         // --------------------------------------------------------------------------
@@ -357,14 +360,14 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // --------------------------------------------------------------------------
         // EPmodule 5: ICs: ll_c(conditional|L); ll_i(integrated); ll_ei (expected i)
         // --------------------------------------------------------------------------
-        ll.fill(0.0);
-        for(uword ak=0; ak<K; ak++){
-          ll.row(ak) = epmodel.log_p(epdta, ak);
-        }
-        ll_c += accu(par.L(sub).slice(ie) % ll) / dta.np;
-        ll_i += epmodel.avg_log_p(epdta);
-        epmodel.set_params(post.Emeans, post.Edcovs, mpij);
-        ll_ei+= epmodel.avg_log_p(epdta);
+        // ll.fill(0.0);
+        // for(uword ak=0; ak<K; ak++){
+        //   ll.row(ak) = epmodel.log_p(epdta, ak);
+        // }
+        // ll_c += accu(par.L(sub).slice(ie) % ll2) / dta.np;
+        // ll_i += epmodel.avg_log_p(epdta);
+        // epmodel.set_params(post.Emeans, post.Edcovs, mpij);
+        // ll_ei+= epmodel.avg_log_p(epdta);
         // Realign the clusters
         if(iter > 0) clustalign(par.L(sub).slice(ie), par.S);
       }
@@ -372,7 +375,9 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
       // SUBmodule 1: Ci | alpha, pi
       // ----------------------------------------------------------------------------
       mat llc = zeros(K, dta.np);
-      if(iter > 0) llc += nu_est(par.S, par.alpha(sub));
+      // if(iter > 0) llc += nu_est(par.S, par.alpha(sub));
+      if(iter > 0) llc.each_col() += arma::log(mpi.t());
+
       for(int ne=0; ne<dta.ne(sub); ne++) llc += nu_est(par.L(sub).slice(ne), par.beta(sub)(ne));
       par.C.slice(sub) = mrmultinom(llc);
       if(iter > 0) clustalign(par.C.slice(sub), par.S);
@@ -400,16 +405,21 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     // ----------------------------------------------------------------------------
     // POPmodule 7: pi |
     // ----------------------------------------------------------------------------
-    par.pi = rDir(sum(par.S, 1), pr.dir0[0]);
+    if(iter % 100 == 0){ //tempering to get rid of local modes
+      par.pi = rDir(sum(par.S, 1), (double) (dta.np+0.0)/K);
+    } else{
+      par.pi = rDir(sum(par.S, 1), pr.dir0[0]);
+    }
     //
-    // IC's
-    par.ll_c = ll_c / accu(dta.ne);
-    par.ll_i = ll_i / accu(dta.ne);
-    par.ll_ei= ll_ei/ accu(dta.ne);
+    // // IC's
+    // par.ll_c = ll_c / accu(dta.ne);
+    // par.ll_i = ll_i / accu(dta.ne);
+    // par.ll_ei= ll_ei/ accu(dta.ne);
     //-----------------------------------------------------------------------------
     // Output samples with 1/10 burn-in
     //-----------------------------------------------------------------------------
-    if((iter >= run/5.0) && (iter % thin == 0)){  // 1/5burn-in and thinning
+    // 1/5 burning in + thining + discard tempring rounds (0-4 every 100its)
+    if((iter >= run/5.0) && (iter % thin == 0) && (iter % 100 > 4)){
       OutputSample();
       //
       // Epoch output
@@ -437,14 +447,14 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   //
   PostSummary(oc);                      // All par's updated as the posterior mean
   // cout << "Number of recordered samples: " << oc <<"\n";
-  //
+
   // Estimate ll_e based on the posterior L;
   {
     double ll_e = 0;
     for(int sub=0; sub<dta.ns; sub++){
       subprior spr;
       spr.mu0     = pr.mu0(sub);      spr.dcov0 = pr.dcov0(sub);
-      spr.a0      = pr.a0;
+      spr.b0      = pr.b0;
       rowvec mpi(K);
       par.pi /= arma::accu(par.pi);
       mpi = mixpr(par.pi, par.alpha(sub));
@@ -453,10 +463,10 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         mat epdta = dta.dta(sub).slice(ie);
         vec tempi = arma::conv_to< vec >::from(mpi);
         rowvec mpij = mixpr(tempi, par.beta(sub)(ie));
-        // mpij /= arma::accu(mpij);
+        mpij /= arma::accu(mpij);             // normal mix probs
         NIG post = NIGpost(epdta, spr, par.L(sub).slice(ie));
         arma::gmm_diag epmodel;
-        mpij[0] = 1-accu(mpij(span(1,K-1)));
+        mpij[0] = 1-accu(mpij(span(1,K-1)));  // numerical check...
         epmodel.set_params(post.Emeans, post.Edcovs, mpij);
         mat ll(K, dta.np);
         for(uword k=0; k<K; k++){
@@ -469,15 +479,15 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   }
 
   // IC's calculation
-  vec ICs(5,fill::zeros);
+  vec ICs(2,fill::zeros);
   {
     double BIC_c = (2.0 * K * arma::accu(dta.d % dta.ne) + K - 1.0) *
       std::log(dta.np) / arma::accu(dta.ne) / dta.np;
     ICs[0] = 2.0 * par.ll_e - BIC_c;      //BIC
-    ICs[1] = 2.0 * par.ll_ei - BIC_c;     //BIC2
-    ICs[2] = 2.0 * par.ll_i - par.ll_ei;  //DIC4
-    ICs[3] = 2.0 * par.ll_c - par.ll_e;   //DIC7
-    ICs[4] = (K * mean(par.alpha) - 1.0) / (K - 1.0);
+    // ICs[1] = 2.0 * par.ll_ei - BIC_c;     //BIC2
+    // ICs[2] = 2.0 * par.ll_i - par.ll_ei;  //DIC4
+    // ICs[3] = 2.0 * par.ll_c - par.ll_e;   //DIC7
+    ICs[1] = (K * mean(par.alpha) - 1.0) / (K - 1.0);
   }
 
   // Returning --------------------------------------------------------------------

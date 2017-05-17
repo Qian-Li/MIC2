@@ -40,9 +40,9 @@ struct PAR{                           // Parameters to be tracked and updated---
   field<cube>       L;                // Epochs clusters;
   cube              C;                // Subject clusters;
   mat               S;                // Population clusters;
-  double            ll_c;             // Pr(Y|theta, L);
-  double            ll_i;             // Pr(Y|theta);
-  double            ll_ei;            // Pr(Y|E(theta|Y));
+  // double            ll_c;             // Pr(Y|theta, L);
+  // double            ll_i;             // Pr(Y|theta);
+  // double            ll_ei;            // Pr(Y|E(theta|Y));
   double            ll_e;             // Pr(Y|post.theta, post.L)
 };
 /************************************************************************************/
@@ -52,8 +52,7 @@ struct prior{                         // Priors --------------------------------
   vec           dir0;                 // Dirichlet prior;
   field<vec>    mu0;                  // NIG means, initialized as epoch mean
   field<vec>    dcov0;                 // NIG sigs, initialized as sample std
-  double        a0;                   // NIG igamma prior (shape)
-  //double        b0;                   // NIG igamma prior (rate)
+  double        b0;                   // NIG igamma prior (rate), E fixed as samp cov
   double        a1;                   // TBeta prior shape1
   double        b1;                   // TBeta prior shape2
 };
@@ -61,8 +60,7 @@ struct prior{                         // Priors --------------------------------
 struct subprior{                      // Subject level NIG prior---------------------;
   vec           mu0;
   vec           dcov0;
-  double        a0;
-  //double        b0;
+  double        b0;
 };
 /************************************************************************************/
 /* Random Number Generators                                                         */
@@ -79,12 +77,12 @@ double        logsum(arma::colvec const &prcol);
 void          clustalign(arma::mat &now, arma::mat const &ref);
 NIG           NIGpost(arma::mat const &data, subprior const &pr, arma::mat const &C);
 arma::mat     nu_est(arma::mat const &C, double const &a);
-// arma::vec     row2vec(rowvec const &a);
+
 /************************************************************************************/
 /* Posterior summary utility                                                        */
 /************************************************************************************/
 arma::mat     vec2adj(arma::vec const& cl);
 arma::colvec  postCI(arma::colvec sample, double const& lvl);
-arma::mat vec2ind(arma::vec const& S, int const &nK);
+arma::mat     vec2ind(arma::vec const& S, int const &nK);
 
 #endif

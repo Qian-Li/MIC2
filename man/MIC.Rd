@@ -26,7 +26,7 @@ A list of objects with the following components:
   \item{\code{mixpr}}{cluster proportions with its posterior summaries}
   \item{\code{alpha}}{S-C level adherence and its posterior summaries}
   \item{\code{beta}}{C-L level adherence and its posterior summaries}
-  \item{\code{ICs}}{model assessment measures: BIC, BIC2, DIC4, DIC7, adjusted adherence}
+  \item{\code{ICs}}{model assessment measures: BIC and adjusted adherence}
 }
 \description{
 \code{MIC} implements integrative clustering on highly structured data. The admissible structure contains repeated measurements

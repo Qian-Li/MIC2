@@ -18,7 +18,7 @@
 #'   \item{\code{mixpr}}{cluster proportions with its posterior summaries}
 #'   \item{\code{alpha}}{S-C level adherence and its posterior summaries}
 #'   \item{\code{beta}}{C-L level adherence and its posterior summaries}
-#'   \item{\code{ICs}}{model assessment measures: BIC, BIC2, DIC4, DIC7, adjusted adherence}
+#'   \item{\code{ICs}}{model assessment measures: BIC and adjusted adherence}
 #'
 #' @references Qian Li, Damla Senturk, Catherine A. Sugar, Shanali Jeste, Charlotte DiStefano, Joel Frohlich, Donatello Telesca
 #'   "\emph{Inferring Brain Signals Synchronicity from a Sample of EEG Readings}".
@@ -86,7 +86,7 @@ MIC <- function(data, K, nit, thin = 1, drop=T){
   ##  - pop cluster
   clustS <- as.vector(c(1:K) %*% output$clustS)
   ##  - individual cluster
-  clustC <- t(apply(output$clustC, c(3), function(x) as.vector(c(1:4) %*% x)))
+  clustC <- t(apply(output$clustC, c(3), function(x) as.vector(c(1:K) %*% x)))
   rownames(clustC) <- paste0('sub',c(1:ns))
   ##  - Read in Ci's
   tab_Ci <- read.table("post/CIs.txt", header = F, sep = " ")
@@ -111,13 +111,13 @@ MIC <- function(data, K, nit, thin = 1, drop=T){
   ##  - epoch clusters
   clustL <- list()
   for(sub in 1:ns){
-    clust <- t(apply(output$clustL[[sub]], c(3), function(x) as.vector(c(1:4) %*% x)))
+    clust <- t(apply(output$clustL[[sub]], c(3), function(x) as.vector(c(1:K) %*% x)))
     rownames(clust) <- paste0('ep',c(1:ne[sub]))
     clustL[[sub]] <- clust
   }
   ##  - IC's
   ICs <- as.vector(output$ICs)
-  names(ICs) <- c("BIC", "BIC2", "DIC4", "DIC7", "COH")
+  names(ICs) <- c("BIC", "COH")
   ###################CLEAR MEMORY and DELETE POST###############################
   rm(output, tab_Ci, clust, betam)
   if(drop) unlink("post", recursive = T)

@@ -58,7 +58,7 @@ double sampcoh(arma::mat const &L, arma::mat const &C,
 arma::vec rDir(arma::colvec const &tot, double const &dir0){
   int nc   = tot.n_elem;
   vec samp(nc);
-  for(int i=0; i<nc; i++) samp(i) = Rf_rgamma(tot(i)+dir0, 1.0);
+  for(int i=0; i<nc; i++) samp[i] = Rf_rgamma(dir0+tot[i], 1.0);
   samp /= arma::accu(samp);
   return samp;
 }

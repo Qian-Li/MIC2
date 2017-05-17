@@ -63,15 +63,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// EigLapSph
-arma::cube EigLapSph(arma::cube  const& data, int         const& D);
-RcppExport SEXP MIC2_EigLapSph(SEXP dataSEXP, SEXP DSEXP) {
+// clustalign
+void clustalign(arma::mat& now, arma::mat const& ref);
+RcppExport SEXP MIC2_clustalign(SEXP nowSEXP, SEXP refSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::cube  const& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< int         const& >::type D(DSEXP);
-    rcpp_result_gen = Rcpp::wrap(EigLapSph(data, D));
-    return rcpp_result_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type now(nowSEXP);
+    Rcpp::traits::input_parameter< arma::mat const& >::type ref(refSEXP);
+    clustalign(now, ref);
+    return R_NilValue;
 END_RCPP
 }

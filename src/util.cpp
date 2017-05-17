@@ -32,7 +32,18 @@ double logsum(arma::colvec const &prcol){
 /***********************************************************************************/
 /* clustalign                                                                      */
 /***********************************************************************************/
-//
+//' Cpp function for aligning indicator matrices
+//'
+//' \code{clustalign} performs indicator matrices alignment to achieve maximal
+//'   concordance of \code{now} to the reference \code{ref}, by swapping the rows
+//'   of matrix \code{now}. Please refer to \code{\link{align}} for general vector
+//'   and matrix alignment.
+//'
+//' @param now,  matrix with its rows to be realigned
+//' @param ref,  matrix to be used as reference
+//' @return no value returned, and matrix \code{now} is aligned on the spot
+//'
+//[[Rcpp::export]]
 void clustalign(arma::mat &now, arma::mat const &ref){
   int k = ref.n_rows;
   double best_score = arma::accu(now % ref);
@@ -67,8 +78,8 @@ NIG NIGpost(arma::mat const &data, subprior const &pr, arma::mat const &C){
       post.Edcovs.col(c)  = pr.dcov0;
       continue;
     }
-    double shape = csize(c)/2.0 + pr.a0;
     for(int dim=0; dim<d; dim++){
+      double shape = csize(c)/2.0 + 1.0 + (double) pr.b0/ pr.dcov0(dim);
       double smean=0.0;     double ssqr=0.0;
       for(int ep=0; ep<p; ep++){
         if(C(c,ep) > .9){
@@ -77,7 +88,7 @@ NIG NIGpost(arma::mat const &data, subprior const &pr, arma::mat const &C){
         }
       }
       double mupost = (pr.mu0(dim) + smean) / (csize(c) + 1.0);
-      double b = pr.dcov0(dim) + 0.5 * (ssqr - csize(c) * std::pow(smean/csize(c), 2.0) +
+      double b = pr.b0 + 0.5 * (ssqr - csize(c) * std::pow(smean/csize(c), 2.0) +
         std::pow((smean/csize(c) - pr.mu0(dim)), 2.0) *
         csize(c) / (csize(c) + 1.0));
       double tau = Rf_rgamma(shape, 1.0/b);

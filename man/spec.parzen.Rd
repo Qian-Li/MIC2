@@ -4,26 +4,20 @@
 \alias{spec.parzen}
 \title{Estimate Spectral Density using Parzen Lag Window}
 \usage{
-spec.parzen(x, a = 100, dt = 1/length(x), w0 = 10^(-5), wn = 1/(2 * dt),
-  nn = 512)
+spec.parzen(x, a = length(x) - 1, nn = 512)
 }
 \arguments{
-\item{x}{A univariate time series.}
+\item{x}{vector, a univariate time series.}
 
-\item{a}{Max lag to truncate the sample ACF estimates, default \code{a=100}. It cannot exceed
-the number of observations in \code{x}.}
+\item{a}{integer, max lag to truncate the sample ACF estimates, default \code{length(x)-1} (no truncation).
+It has to be smaller than the length fo time seires \code{x}.}
 
-\item{dt}{1/freq, unit sampling interval of \code{x}.}
-
-\item{w0}{The minimal frequency of interest.}
-
-\item{wn}{The maximal frequency of interest, default as freq/2.}
-
-\item{nn}{Resolution of the spectral estimates (number of points on frequency domain).}
+\item{nn}{integer, resolution of the spectral estimates (number of points on frequency domain).}
 }
 \value{
-A \code{nn}-by-2 matrix, with the first column being the estimated frequencies,
-  and the second column being the esimated spectrum.
+List of the following items:
+  \item{\code{freq}}{frequencies where PSD is evaluated at}
+  \item{\code{spec}}{estimated correlogram with truncation \code{a} and Parzen window smoothed ACF}
 }
 \description{
 \code{spec.parzen} calculate the spectral estimate based on a Fourier transform of a
@@ -44,7 +38,7 @@ Parzen window estimator works the best when the true spectrum is continuous, and
 x <- rnorm(100)
 spec <- spec.parzen(x, a = 50, nn = 50)
 
-
-plot(spec, type = 'l')
+plot(spec.pgram(x, plot = "F")$spec, ylab = 'spec')
+lines(spec$spec)
 }
 }
