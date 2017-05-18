@@ -5,7 +5,7 @@
 \title{Time Series Simulation for MIC}
 \usage{
 MIC_sim(alpha, nsub, segs, fs, Ct = rep(c(1, 2, 3, 4), rep(10, 4)),
-  bad_sub = 0, scheme = 0)
+  bad_sub = 0, scheme = 0, iSNR = 0)
 }
 \arguments{
 \item{alpha}{numeric in [0, 1], group-subject adherence}
@@ -21,6 +21,8 @@ MIC_sim(alpha, nsub, segs, fs, Ct = rep(c(1, 2, 3, 4), rep(10, 4)),
 \item{bad_sub}{integer, number of outlying subjects indexed as 1 to \code{bad_sub}}
 
 \item{scheme}{stationarity: 0 = stationary; 1 = piecewise stationary}
+
+\item{iSNR}{scalar, inverse of Signal-to-Noise Ratio, default at 0 (no noise)}
 }
 \value{
 A list of objects with the following components:

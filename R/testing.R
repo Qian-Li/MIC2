@@ -3,48 +3,6 @@
 #' @importFrom utils tail read.table
 NULL
 if(F){
-  ###############################################################################
-  # 3*3 Gaussian mixture simulation
-  data1 <- array(dim = c(2,30,3))
-  for(ep in 1:3){
-    data1[,,ep] <- t(rbind(MASS::mvrnorm(10, mu = c(0,10), Sigma = 5*diag(2)),
-                           MASS::mvrnorm(10, mu = c(10,0), Sigma = 5*diag(2)),
-                           MASS::mvrnorm(10, mu = c(5,5), Sigma = 5*diag(2))))
-  }
-  data1[,,2] <- data1[,c(11:30,1:10),2]
-  data1[,,3] <- data1[,c(3:30,1,2),3]
-
-  data2 <- array(dim = c(2,30,3))
-  for(ep in 1:3){
-    data2[,,ep] <- t(rbind(MASS::mvrnorm(10, mu = c(0,5), Sigma = 4*diag(2)),
-                           MASS::mvrnorm(10, mu = c(5,0), Sigma = 4*diag(2)),
-                           MASS::mvrnorm(10, mu = c(5,5), Sigma = 4*diag(2))))
-  }
-  data2[,,2] <- data2[,c(11:30,1:10),2]
-  data2[,,3] <- data2[,c(3:30,1,2),3]
-
-  data3 <- array(dim = c(2,30,3))
-
-  for(ep in 1:3){
-    data3[,,ep] <- t(rbind(MASS::mvrnorm(10, mu = c(0,.20), Sigma = .10*diag(2)),
-                           MASS::mvrnorm(10, mu = c(.20,0), Sigma = .10*diag(2)),
-                           MASS::mvrnorm(10, mu = c(.20,.20), Sigma = .10*diag(2))))
-  }
-  data3[,,2] <- data3[,c(11:30,1:10),2]
-  data3[,,3] <- data3[,c(6:30,1:5),3]
-  list_dat = list(data1,data2,data3)
-
-  start <- Sys.time()
-  MIC(list_dat, 3, 10000) -> test
-  Sys.time() - start
-  #################################################################################
-  ## TS simulation
-
-  # id <- 1
-  # newdir <- paste0('dataset',id)
-  # cat(newdir,'\n')
-  # dir.create(newdir)
-  # setwd(newdir)
   ################## dk search ##################
   set.seed(123)
   sim <- MIC_sim(alpha = 0.9,  nsub = 10, fs = 200, segs = 10)
@@ -92,5 +50,13 @@ if(F){
   specs <- apply(sim, c(2,3), function(x) specParzen(x,100,50,100)/sum(specParzen(x,100,50,100)))
   specs <- apply(specs, c(1,2), mean)
   matplot(specs, type = 'l', col = c(1,1,1,2,2,2,3,3,3))
-
+  #################### SNR simulations
+  set.seed(123)
+  sim <- as.vector(MIC_sim(alpha = 1, nsub = 1, Ct = c(3), fs = 200, segs = 1, SNR=0)$Data[[1]])
+  spec1 <- spec.pgram(sim,plot = F)$spec[1:50]; spec2 <- spec.parzen(sim,a = 100,nn = 100)$spec[1:50]
+  plot(spec1/sum(spec1)); lines(spec2/sum(spec2), col = 'red')
+  set.seed(123)
+  sim <- as.vector(MIC_sim(alpha = 1, nsub = 1, Ct = c(3), fs = 200, segs = 1, SNR=0.5)$Data[[1]])
+  spec3 <- spec.pgram(sim,plot = F)$spec[1:50]; spec4 <- spec.parzen(sim,a = 100,nn = 100)$spec[1:50]
+  points(spec3/sum(spec3), col = 'blue'); lines(spec4/sum(spec4), col = "blue")
 }

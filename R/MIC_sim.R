@@ -12,6 +12,7 @@
 #' @param Ct vector of integers, true group labels
 #' @param bad_sub integer, number of outlying subjects indexed as 1 to \code{bad_sub}
 #' @param scheme stationarity: 0 = stationary; 1 = piecewise stationary
+#' @param iSNR scalar, inverse of Signal-to-Noise Ratio, default at 0 (no noise)
 #'
 #' @return A list of objects with the following components:
 #'   \item{\code{C}}{True group label}
@@ -40,7 +41,8 @@
 MIC_sim <- function(alpha,
                     nsub,
                     segs,
-                    fs, Ct = rep(c(1, 2, 3, 4), rep(10, 4)), bad_sub = 0, scheme = 0){
+                    fs,
+                    Ct = rep(c(1, 2, 3, 4), rep(10, 4)), bad_sub = 0, scheme = 0, iSNR = 0){
   ## indices
   index <- c(1:length(unique(Ct)))
   nelec <- length(Ct)
@@ -101,7 +103,8 @@ MIC_sim <- function(alpha,
       ts <- rbind(ts1,ts2,ts3,ts4,ts5)
       mat_data[e,before] <- t(weights1[,sub_label[e,sub]]) %*% ts[,before]
       mat_data[e,after] <- t(weights2[,sub_label[e,sub]]) %*% ts[,after]
-      mat_data[e,] <- mat_data[e,]
+      mat_data[e,] <- mat_data[e,] + rnorm(segs*fs,
+                                           mean = 0, sd = sqrt(iSNR*var(mat_data[e,])))
     }
     dim(mat_data) <- c(nelec, fs, segs)
     data[[sub]] <- mat_data
