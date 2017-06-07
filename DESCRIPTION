@@ -9,7 +9,7 @@ Description: MIC package performs integrative clustering on
   Rcpp, which yields 30+ better performance than the original version.
 License: GPL-2
 Encoding: UTF-8
-LazyData: FALSE
+LazyData: true
 Imports: Rcpp (>= 0.12.9),
     RcppArmadillo
 LinkingTo: Rcpp, RcppArmadillo

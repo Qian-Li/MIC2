@@ -72,6 +72,25 @@ EigLap <- function(data, D, normal) {
     .Call('MIC2_EigLap', PACKAGE = 'MIC2', data, D, normal)
 }
 
+#' Spectral densities averaged by overlapped sliding windows
+#'
+#' \code{SpecOnly} calculates the normalized PSD averaged within sliding windows.
+#'     For its usage, please refer to \code{\link{MIC_prep}}.
+#'
+#' @param ts,   3 dimensional array of time series
+#' @param lag,  integer, trunctation for spectral estimates in \code{\link{spec.parzen}}
+#' @param wn,   integer, maximal frequency as in \code{\link{specParzen}}
+#' @param win,  integer, moving average window size for spectral smoothing
+#' @param overlap, integer, moving average overlap size for spectral smoothing
+#' @param specN, integer, spectral resolution in \code{\link{specParzen}}
+#' @return 3d array of spectral densities
+#'
+#' @seealso \code{\link{spec.parzen}} for spectral density estimates and \code{\link{MIC_prep}}
+#'   for time series preprocessing before \code{\link{MIC}}
+SpecOnly <- function(ts, lag, wn, win, overlap, specN) {
+    .Call('MIC2_SpecOnly', PACKAGE = 'MIC2', ts, lag, wn, win, overlap, specN)
+}
+
 #' Cpp function for aligning indicator matrices
 #'
 #' \code{clustalign} performs indicator matrices alignment to achieve maximal

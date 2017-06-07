@@ -63,6 +63,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// SpecOnly
+arma::cube SpecOnly(arma::cube const& ts, int lag, int const& wn, int const& win, int const& overlap, int const& specN);
+RcppExport SEXP MIC2_SpecOnly(SEXP tsSEXP, SEXP lagSEXP, SEXP wnSEXP, SEXP winSEXP, SEXP overlapSEXP, SEXP specNSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::cube const& >::type ts(tsSEXP);
+    Rcpp::traits::input_parameter< int >::type lag(lagSEXP);
+    Rcpp::traits::input_parameter< int const& >::type wn(wnSEXP);
+    Rcpp::traits::input_parameter< int const& >::type win(winSEXP);
+    Rcpp::traits::input_parameter< int const& >::type overlap(overlapSEXP);
+    Rcpp::traits::input_parameter< int const& >::type specN(specNSEXP);
+    rcpp_result_gen = Rcpp::wrap(SpecOnly(ts, lag, wn, win, overlap, specN));
+    return rcpp_result_gen;
+END_RCPP
+}
 // clustalign
 void clustalign(arma::mat& now, arma::mat const& ref);
 RcppExport SEXP MIC2_clustalign(SEXP nowSEXP, SEXP refSEXP) {

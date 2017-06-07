@@ -9,6 +9,7 @@
 #' @param par.spec vector of parameters as \code{spec.lag}, \code{spec.mfreq} and \code{spec.len} as in \code{\link{SpecSim}}
 #' @param par.win vector, moving average smoothing parameters, see \code{\link{SpecSim}}, default at \code{c(1,0)}
 #' @param unit_len boolean, to use normalized eigen vector in \code{\link{EigLap}} (default \code{FALSE})
+#' @param spec boolean, to return spectral estimates or MIC ready data format. (default \code{FALSE})
 #' @return List of data matrices, each with No.objects rows and \code{d} columns.
 #' @examples
 #' \dontrun{
@@ -34,7 +35,8 @@ MIC_prep <- function(X, d,
                      exclude = NULL,
                      par.spec= NULL,
                      par.win = c(1, 0),
-                     unit_len  = FALSE){
+                     unit_len  = FALSE,
+                     spec  = FALSE){
   if (!is.null(exclude)) X <- X[- exclude, , ]         #chanel exclusion
   segs <- dim(X) [3]; fs <- dim(X) [2]; nc <- dim(X) [1]  #extract consts
   # Detrend (Linear) and tapering with .10 on both end
@@ -51,9 +53,13 @@ MIC_prep <- function(X, d,
   } else if (length(par.spec)==1) {
     spec.lag=par.spec[1]
   }
-  # Cpp based spectral similarity
-  ep_sim  <- SpecSim(ts = X, lag = spec.lag, wn = spec.mfreq, win = par.win[1], overlap = par.win[2], specN = spec.len)
-  # Eigen Laplacian projection
-  ep_eig  <- EigLap(data = ep_sim, D = d, normal = unit_len)
+  if(!spec){
+    # Cpp based spectral similarity
+    ep_sim  <- SpecSim(ts = X, lag = spec.lag, wn = spec.mfreq, win = par.win[1], overlap = par.win[2], specN = spec.len)
+    # Eigen Laplacian projection
+    ep_eig  <- EigLap(data = ep_sim, D = d, normal = unit_len)
+  } else {
+    ep_eig <- SpecOnly(ts = X, lag = spec.lag, wn = spec.mfreq, win = par.win[1], overlap = par.win[2], specN = spec.len)
+  }
   return(ep_eig)
 }

@@ -5,7 +5,7 @@
 \title{Data preparation for MIC}
 \usage{
 MIC_prep(X, d, exclude = NULL, par.spec = NULL, par.win = c(1, 0),
-  unit_len = FALSE)
+  unit_len = FALSE, spec = FALSE)
 }
 \arguments{
 \item{X}{3-d array, organized as No.objects * No.observations * No.segments, see simulated example by \code{\link{MIC_sim}}}
@@ -19,6 +19,8 @@ MIC_prep(X, d, exclude = NULL, par.spec = NULL, par.win = c(1, 0),
 \item{par.win}{vector, moving average smoothing parameters, see \code{\link{SpecSim}}, default at \code{c(1,0)}}
 
 \item{unit_len}{boolean, to use normalized eigen vector in \code{\link{EigLap}} (default \code{FALSE})}
+
+\item{spec}{boolean, to return spectral estimates or MIC ready data format. (default \code{FALSE})}
 }
 \value{
 List of data matrices, each with No.objects rows and \code{d} columns.

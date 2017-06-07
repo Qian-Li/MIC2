@@ -76,7 +76,7 @@ void PostSummary(int const &nsims)
   int tot_ne  = accu(dta.ne);             //total number of epochs;
   int tot_c   = 1+dta.ns+tot_ne;          //total number of cluster vectors;
   int tot_ci  = k + dta.ns + tot_ne;      //total number of C.I. parameters;
-  double du =  pow(dta.np, 2.0);          //upper limit of distance;
+  double du   =  pow(dta.np, 2.0);          //upper limit of distance;
   //--------------------------------------------------------------------------------//
   // Read in Post Samples
   //--------------------------------------------------------------------------------//
@@ -278,7 +278,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   // prior declaration:
   pr.b0   = 0.001;                                       //NIG
   pr.a1   = 1;                   pr.b1   = 1;           //Tbeta
-  pr.dir0 = vec(K);              pr.dir0.fill(1.0);     //Dirichlet
+  pr.dir0 = vec(K);              pr.dir0.fill(5.0);     //Dirichlet
   pr.mu0  = field< vec >(dta.ns);                       //NIG-means
   pr.dcov0= field< vec >(dta.ns);                       //NIG-vars
   for(int sub=0; sub<dta.ns; sub++){

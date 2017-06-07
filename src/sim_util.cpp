@@ -1,4 +1,6 @@
 #include "sim.h"
+// RE-run!!
+// tools::package_native_routine_registration_skeleton("~/Research/MIC2")
 //
 /***********************************************************************************/
 /* myacf: autocovariance function                                                  */
@@ -49,7 +51,7 @@ arma::vec specParzen(arma::vec const &ts,
         (2.0*std::pow((1-win[i]), 3.0));
   }
   xcovs %= win;                                         //smoothed acf
-  double up = ((double) maxf)/ts.n_elem;
+  double up = (maxf + 0.0)/ts.n_elem;
   arma::vec spec = arma::linspace((up/outn),up,outn);
   for(int i=0; i<outn; i++){
     double sum=xcovs[0];
@@ -229,3 +231,43 @@ arma::cube EigLap(
 //   }
 //   return eigdata;
 // }
+
+//
+/***********************************************************************************/
+/* SpecOnly: Spectral densities Only                                               */
+/***********************************************************************************/
+//' Spectral densities averaged by overlapped sliding windows
+//'
+//' \code{SpecOnly} calculates the normalized PSD averaged within sliding windows.
+//'     For its usage, please refer to \code{\link{MIC_prep}}.
+//'
+//' @param ts,   3 dimensional array of time series
+//' @param lag,  integer, trunctation for spectral estimates in \code{\link{spec.parzen}}
+//' @param wn,   integer, maximal frequency as in \code{\link{specParzen}}
+//' @param win,  integer, moving average window size for spectral smoothing
+//' @param overlap, integer, moving average overlap size for spectral smoothing
+//' @param specN, integer, spectral resolution in \code{\link{specParzen}}
+//' @return 3d array of spectral densities
+//'
+//' @seealso \code{\link{spec.parzen}} for spectral density estimates and \code{\link{MIC_prep}}
+//'   for time series preprocessing before \code{\link{MIC}}
+//[[Rcpp::export]]
+arma::cube SpecOnly(arma::cube const &ts,
+                    int lag, int const &wn,
+                    int const &win, int const &overlap,
+                    int const &specN){
+  // Estiamte spectral array
+  int nc = ts.n_cols;     int ns = ts.n_slices;
+  arma::cube segspec(specN, nc, ns);
+  for(int seg=0; seg<ns; seg++){
+    for(int chan=0; chan<nc; chan++){
+      arma::vec vts = arma::conv_to<vec>::from(ts.slice(seg).col(chan));
+      arma::vec vsp = specParzen(vts, lag, wn, specN);
+      vsp /= arma::accu(vsp);
+      segspec.slice(seg).col(chan) = vsp;
+    }
+  }
+  // Moving average
+  arma::cube epspec = MA(segspec, win, overlap);
+  return epspec;
+}

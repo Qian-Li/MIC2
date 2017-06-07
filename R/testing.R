@@ -52,11 +52,11 @@ if(F){
   matplot(specs, type = 'l', col = c(1,1,1,2,2,2,3,3,3))
   #################### SNR simulations
   set.seed(123)
-  sim <- as.vector(MIC_sim(alpha = 1, nsub = 1, Ct = c(3), fs = 200, segs = 1, SNR=0)$Data[[1]])
+  sim <- as.vector(MIC_sim(alpha = 1, nsub = 1, Ct = c(3), fs = 200, segs = 1, iSNR=0)$Data[[1]])
   spec1 <- spec.pgram(sim,plot = F)$spec[1:50]; spec2 <- spec.parzen(sim,a = 100,nn = 100)$spec[1:50]
   plot(spec1/sum(spec1)); lines(spec2/sum(spec2), col = 'red')
   set.seed(123)
-  sim <- as.vector(MIC_sim(alpha = 1, nsub = 1, Ct = c(3), fs = 200, segs = 1, SNR=0.5)$Data[[1]])
+  sim <- as.vector(MIC_sim(alpha = 1, nsub = 1, Ct = c(3), fs = 200, segs = 1, iSNR=1)$Data[[1]])
   spec3 <- spec.pgram(sim,plot = F)$spec[1:50]; spec4 <- spec.parzen(sim,a = 100,nn = 100)$spec[1:50]
   points(spec3/sum(spec3), col = 'blue'); lines(spec4/sum(spec4), col = "blue")
 }
