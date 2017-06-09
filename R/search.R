@@ -65,7 +65,7 @@ dk_search <- function(X_array,
       }
     }
     if(K == max_d){
-      stop('Set a larger max_d!')
+      warning('Max D has reached!'); break
     }
     if (D == K) break; # converge
     D <- K # next D

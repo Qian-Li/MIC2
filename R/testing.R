@@ -1,6 +1,7 @@
 # Importation of ourside functions
 #' @importFrom stats runif rnorm lm arima.sim var acf rexp spec.taper
 #' @importFrom utils tail read.table
+#' @importFrom graphics box plot points
 NULL
 if(F){
   ################## dk search ##################
@@ -59,4 +60,21 @@ if(F){
   sim <- as.vector(MIC_sim(alpha = 1, nsub = 1, Ct = c(3), fs = 200, segs = 1, iSNR=1)$Data[[1]])
   spec3 <- spec.pgram(sim,plot = F)$spec[1:50]; spec4 <- spec.parzen(sim,a = 100,nn = 100)$spec[1:50]
   points(spec3/sum(spec3), col = 'blue'); lines(spec4/sum(spec4), col = "blue")
+
+  #################### To get the plotting coordinates
+  coords <- read.csv("~/Dropbox/EEG_files/Data/EEG_coordinates.csv", header = T)
+  coords <- coords[-129,]
+  coords$theta <- coords$theta/180*pi;coords$phi <- coords$phi/180*pi
+
+  coords <- coords[c(-125:-128),]
+
+  off <- 16.5
+  c <- sqrt(coords$radius^2+off^2-2*off*coords$radius*cos(pi/2+coords$phi))
+  newr <- tan(acos((off^2+c^2-coords$radius^2)/(2*off*c)))
+  newr[c(48,119)] <- .90*newr[c(48,119)]; newr <- newr/max(newr + .05)
+
+  coords$x <- newr*sin(coords$theta); coords$y <- newr*cos(coords$theta)
+  plot(coords$x, coords$y,xlim=c(-1,1),ylim = c(-1,1))
+  # points(y=(newr*cos(coords$theta))[125:129],x=(newr*sin(coords$theta))[125:129], col = 'blue')
+  EEGcoords <- coords[,c(1,5,6)]; devtools::use_data(EEGcoords, internal = T)
 }
