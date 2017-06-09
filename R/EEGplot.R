@@ -18,7 +18,7 @@ EEGplot <- function(clust, color = NULL)
 { # A few checks
   K <- max(clust); if(length(clust)!=124) stop("Length of clust needs to be 124!")
   if(is.null(color)) color <- rep('black', K)
-  if(length(color)!=K) stop("Number of colors need to match clusters(max(clust))!")
+  if(length(color)<=K) stop("Number of colors needs to be greater than K (no.cluster)!")
   # Initiate
   plot(0,xaxt='n',yaxt='n',bty='n',pch='',ylab='',xlab='', xlim = c(-1,1),ylim=c(-1,1))
   # Box
