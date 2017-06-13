@@ -278,7 +278,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   // prior declaration:
   pr.b0   = 0.001;                                       //NIG
   pr.a1   = 1;                   pr.b1   = 1;           //Tbeta
-  pr.dir0 = vec(K);              pr.dir0.fill(5.0);     //Dirichlet
+  pr.dir0 = vec(K);              pr.dir0.fill(1.0);     //Dirichlet
   pr.mu0  = field< vec >(dta.ns);                       //NIG-means
   pr.dcov0= field< vec >(dta.ns);                       //NIG-vars
   for(int sub=0; sub<dta.ns; sub++){
@@ -286,6 +286,8 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     pr.dcov0(sub) = vec(dta.d(sub));            pr.dcov0(sub).fill(0.0);
   }
   // Initial Clusters and NIG priors:
+  // Figure out the best reference to align against;
+  mat newref(K, dta.np); double refscore = 1.0;
   for(int sub=0; sub<dta.ns; sub++){
     for(int ep=0; ep<dta.ne(sub); ep++){
       mat matdata = dta.dta(sub).slice(ep);
@@ -302,6 +304,11 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
       for(int unit=0; unit<dta.np; unit++){
         int initc = init(unit);
         par.L(sub)(initc, unit, ep) = 1;
+      }
+      colvec props = sum(par.L(sub).slice(ep), 1) / (dta.np+0.0); //proportions
+      if((props.max()-props.min()) <= refscore) {
+        refscore = props.max() - props.min();
+        newref = par.L(sub).slice(ep);
       }
       // NIG priors
       vec ave_m = arma::mean(model.means, 1);
@@ -368,8 +375,10 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // ll_i += epmodel.avg_log_p(epdta);
         // epmodel.set_params(post.Emeans, post.Edcovs, mpij);
         // ll_ei+= epmodel.avg_log_p(epdta);
+
         // Realign the clusters
-        if(iter > 0) clustalign(par.L(sub).slice(ie), par.S);
+        // if(iter > 0) clustalign(par.L(sub).slice(ie), par.S);
+        clustalign(par.L(sub).slice(ie), newref);
       }
       // ----------------------------------------------------------------------------
       // SUBmodule 1: Ci | alpha, pi
@@ -380,7 +389,8 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
 
       for(int ne=0; ne<dta.ne(sub); ne++) llc += nu_est(par.L(sub).slice(ne), par.beta(sub)(ne));
       par.C.slice(sub) = mrmultinom(llc);
-      if(iter > 0) clustalign(par.C.slice(sub), par.S);
+      // if(iter > 0) clustalign(par.C.slice(sub), par.S);
+      clustalign(par.C.slice(sub), newref);
       // ----------------------------------------------------------------------------
       // SUBmodule 2: Beta | C, L, pr
       // ----------------------------------------------------------------------------
@@ -405,11 +415,12 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     // ----------------------------------------------------------------------------
     // POPmodule 7: pi |
     // ----------------------------------------------------------------------------
-    if(iter % 100 == 0){ //tempering to get rid of local modes
-      par.pi = rDir(sum(par.S, 1), (double) (dta.np+0.0)/K);
-    } else{
-      par.pi = rDir(sum(par.S, 1), pr.dir0[0]);
-    }
+    // if(iter % 100 == 0){ //tempering to get rid of local modes
+    //   par.pi = rDir(sum(par.S, 1), (double) (dta.np+0.0)/K);
+    // } else{
+    //   par.pi = rDir(sum(par.S, 1), pr.dir0[0]);
+    // }
+    par.pi = rDir(sum(par.S, 1), pr.dir0[0]);
     //
     // // IC's
     // par.ll_c = ll_c / accu(dta.ne);
@@ -419,7 +430,8 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     // Output samples with 1/10 burn-in
     //-----------------------------------------------------------------------------
     // 1/5 burning in + thining + discard tempring rounds (0-4 every 100its)
-    if((iter >= run/5.0) && (iter % thin == 0) && (iter % 100 > 4)){
+    // if((iter >= run/5.0) && (iter % thin == 0) && (iter % 100 > 4)){
+    if((iter>=run/5.0) && (iter%thin==0)){
       OutputSample();
       //
       // Epoch output

@@ -71,7 +71,7 @@ NIG NIGpost(arma::mat const &data, subprior const &pr, arma::mat const &C){
   post.Emeans= zeros<mat> (d,k); post.Edcovs= zeros<mat> (d,k);
   colvec csize = arma::sum(C,1);
   for(int c=0; c<k; c++){
-    if(csize(c) < 1.0){ // empty cluster
+    if(csize(c) <= 1.0){ // empty cluster
       post.means.col(c)   = pr.mu0;
       post.dcovs.col(c)   = pr.dcov0;
       post.Emeans.col(c)  = pr.mu0;
