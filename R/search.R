@@ -12,6 +12,7 @@
 #' @param par.spec vector, spectral estimation parameters the same as \code{par.spec} in \code{\link{MIC_prep}}
 #' @param par.win vector, epoch smoothing parameters see \code{\link{MIC_prep}} and \code{\link{SpecSim}}
 #' @param n.iter integer, number of iterations in \code{\link{MIC}} fitting
+#' @param unit_len boolean, whether to use normalized eigen-Laplacian in \code{\link{MIC_prep}}
 #' @return A matrix of searching trajectory
 #'   \item{\code{d}}{dimensionality}
 #'   \item{\code{K}}{prespecified number of clusters}
@@ -35,14 +36,15 @@ dk_search <- function(X_array,
                       max_d = 10,
                       n.iter,
                       par.spec = c(100,50,100),
-                      par.win = c(1, 0)){
+                      par.win  = c(1, 0),
+                      unit_len = T){
   result <- c()
   # Initiate
   D <- 2
   K <- 2
   while (D <= max_d){
     list_data <- lapply(X_array, function(x) MIC_prep(x, d=D,
-                                      par.spec = par.spec, par.win = par.win, unit_len = F))
+                                      par.spec = par.spec, par.win = par.win, unit_len = unit_len))
     if (D > 2) K <- K - 1 # conservative step-back
     output <- MIC(data = list_data, K = K, nit = n.iter, drop = T)
     current_ICs <- as.vector(output$ICs)

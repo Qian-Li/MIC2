@@ -5,7 +5,7 @@
 \title{d-K Search Algorithm}
 \usage{
 dk_search(X_array, max_d = 10, n.iter, par.spec = c(100, 50, 100),
-  par.win = c(1, 0))
+  par.win = c(1, 0), unit_len = T)
 }
 \arguments{
 \item{X_array}{list of data arrays, each of which is organized as No.objects * No.observations * No.segments.}
@@ -17,6 +17,8 @@ dk_search(X_array, max_d = 10, n.iter, par.spec = c(100, 50, 100),
 \item{par.spec}{vector, spectral estimation parameters the same as \code{par.spec} in \code{\link{MIC_prep}}}
 
 \item{par.win}{vector, epoch smoothing parameters see \code{\link{MIC_prep}} and \code{\link{SpecSim}}}
+
+\item{unit_len}{boolean, whether to use normalized eigen-Laplacian in \code{\link{MIC_prep}}}
 }
 \value{
 A matrix of searching trajectory
