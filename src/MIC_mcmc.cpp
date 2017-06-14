@@ -278,7 +278,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   // prior declaration:
   pr.b0   = 0.001;                                       //NIG
   pr.a1   = 1;                   pr.b1   = 1;           //Tbeta
-  pr.dir0 = vec(K);              pr.dir0.fill(1.0);     //Dirichlet
+  pr.dir0 = vec(K);              pr.dir0.fill(5.0);     //Dirichlet
   pr.mu0  = field< vec >(dta.ns);                       //NIG-means
   pr.dcov0= field< vec >(dta.ns);                       //NIG-vars
   for(int sub=0; sub<dta.ns; sub++){
@@ -377,8 +377,16 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // ll_ei+= epmodel.avg_log_p(epdta);
 
         // Realign the clusters
+        // -- Option1:
         // if(iter > 0) clustalign(par.L(sub).slice(ie), par.S);
-        clustalign(par.L(sub).slice(ie), newref);
+        // -- Option2:
+        // clustalign(par.L(sub).slice(ie), newref);
+        // -- Option3:
+        if(iter>=run/5.0){
+          clustalign(par.L(sub).slice(ie), par.S);
+        } else {
+          clustalign(par.L(sub).slice(ie), newref);
+        }
       }
       // ----------------------------------------------------------------------------
       // SUBmodule 1: Ci | alpha, pi
@@ -389,8 +397,12 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
 
       for(int ne=0; ne<dta.ne(sub); ne++) llc += nu_est(par.L(sub).slice(ne), par.beta(sub)(ne));
       par.C.slice(sub) = mrmultinom(llc);
-      // if(iter > 0) clustalign(par.C.slice(sub), par.S);
-      clustalign(par.C.slice(sub), newref);
+      if(iter >= run/5.0) {
+        clustalign(par.C.slice(sub), par.S);
+      } else {
+        clustalign(par.C.slice(sub), newref);
+      }
+      // clustalign(par.C.slice(sub), newref);
       // ----------------------------------------------------------------------------
       // SUBmodule 2: Beta | C, L, pr
       // ----------------------------------------------------------------------------
