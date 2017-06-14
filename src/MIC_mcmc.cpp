@@ -76,7 +76,7 @@ void PostSummary(int const &nsims)
   int tot_ne  = accu(dta.ne);             //total number of epochs;
   int tot_c   = 1+dta.ns+tot_ne;          //total number of cluster vectors;
   int tot_ci  = k + dta.ns + tot_ne;      //total number of C.I. parameters;
-  double du   =  pow(dta.np, 2.0);          //upper limit of distance;
+  double du   =  pow(dta.np, 2.0);        //upper limit of distance;
   //--------------------------------------------------------------------------------//
   // Read in Post Samples
   //--------------------------------------------------------------------------------//
@@ -278,15 +278,14 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   // prior declaration:
   pr.b0   = 0.001;                                       //NIG
   pr.a1   = 1;                   pr.b1   = 1;           //Tbeta
-  pr.dir0 = vec(K);              pr.dir0.fill(5.0);     //Dirichlet
+  pr.dir0 = vec(K);              pr.dir0.fill(3.0);     //Dirichlet
   pr.mu0  = field< vec >(dta.ns);                       //NIG-means
   pr.dcov0= field< vec >(dta.ns);                       //NIG-vars
   for(int sub=0; sub<dta.ns; sub++){
     pr.mu0(sub)   = vec(dta.d(sub));            pr.mu0(sub).fill(0.0);
     pr.dcov0(sub) = vec(dta.d(sub));            pr.dcov0(sub).fill(0.0);
   }
-  // Initial Clusters and NIG priors:
-  // Figure out the best reference to align against;
+  // Initial Clusters, NIG priors and reference label:
   mat newref(K, dta.np); double refscore = 1.0;
   for(int sub=0; sub<dta.ns; sub++){
     for(int ep=0; ep<dta.ne(sub); ep++){
@@ -364,6 +363,17 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // EPmodule 4: L | gmm_probs
         // --------------------------------------------------------------------------
         par.L(sub).slice(ie) = mrmultinom(ll);
+        // Realign the clusters
+        // -- Option1:
+        // if(iter > 0) clustalign(par.L(sub).slice(ie), par.S);
+        // -- Option2:
+        clustalign(par.L(sub).slice(ie), newref);
+        // -- Option3:
+        // if(iter>=run/5.0){
+        //   clustalign(par.L(sub).slice(ie), par.S);
+        // } else {
+        //   clustalign(par.L(sub).slice(ie), newref);
+        // }
         // --------------------------------------------------------------------------
         // EPmodule 5: ICs: ll_c(conditional|L); ll_i(integrated); ll_ei (expected i)
         // --------------------------------------------------------------------------
@@ -375,18 +385,6 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // ll_i += epmodel.avg_log_p(epdta);
         // epmodel.set_params(post.Emeans, post.Edcovs, mpij);
         // ll_ei+= epmodel.avg_log_p(epdta);
-
-        // Realign the clusters
-        // -- Option1:
-        // if(iter > 0) clustalign(par.L(sub).slice(ie), par.S);
-        // -- Option2:
-        // clustalign(par.L(sub).slice(ie), newref);
-        // -- Option3:
-        if(iter>=run/5.0){
-          clustalign(par.L(sub).slice(ie), par.S);
-        } else {
-          clustalign(par.L(sub).slice(ie), newref);
-        }
       }
       // ----------------------------------------------------------------------------
       // SUBmodule 1: Ci | alpha, pi
@@ -397,12 +395,12 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
 
       for(int ne=0; ne<dta.ne(sub); ne++) llc += nu_est(par.L(sub).slice(ne), par.beta(sub)(ne));
       par.C.slice(sub) = mrmultinom(llc);
-      if(iter >= run/5.0) {
-        clustalign(par.C.slice(sub), par.S);
-      } else {
-        clustalign(par.C.slice(sub), newref);
-      }
-      // clustalign(par.C.slice(sub), newref);
+      // if(iter >= run/5.0) {
+      //   clustalign(par.C.slice(sub), par.S);
+      // } else {
+      //   clustalign(par.C.slice(sub), newref);
+      // }
+      clustalign(par.C.slice(sub), newref);
       // ----------------------------------------------------------------------------
       // SUBmodule 2: Beta | C, L, pr
       // ----------------------------------------------------------------------------
