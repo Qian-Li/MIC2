@@ -1,7 +1,6 @@
 # Importation of ourside functions
 #' @importFrom stats runif rnorm lm arima.sim var acf rexp spec.taper
 #' @importFrom utils tail read.table
-#' @importFrom graphics box plot points
 NULL
 if(F){
   ################## dk search ##################
