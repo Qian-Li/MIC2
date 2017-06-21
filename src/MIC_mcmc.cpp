@@ -278,7 +278,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   // prior declaration:
   pr.b0   = 0.001;                                       //NIG
   pr.a1   = 1;                   pr.b1   = 1;           //Tbeta
-  pr.dir0 = vec(K);              pr.dir0.fill(5.0);     //Dirichlet
+  pr.dir0 = vec(K);              pr.dir0.fill(1.0);     //Dirichlet
   pr.mu0  = field< vec >(dta.ns);                       //NIG-means
   pr.dcov0= field< vec >(dta.ns);                       //NIG-vars
   for(int sub=0; sub<dta.ns; sub++){
@@ -367,13 +367,13 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // -- Option1:
         // if(iter > 0) clustalign(par.L(sub).slice(ie), par.S);
         // -- Option2:
-        // clustalign(par.L(sub).slice(ie), newref);
+        clustalign(par.L(sub).slice(ie), newref);
         // -- Option3:
-        if(iter>=run/4.0){
-          clustalign(par.L(sub).slice(ie), par.S);
-        } else {
-          clustalign(par.L(sub).slice(ie), newref);
-        }
+        // if(iter>=run/4.0){
+        //   clustalign(par.L(sub).slice(ie), par.S);
+        // } else {
+        //   clustalign(par.L(sub).slice(ie), newref);
+        // }
         // --------------------------------------------------------------------------
         // EPmodule 5: ICs: ll_c(conditional|L); ll_i(integrated); ll_ei (expected i)
         // --------------------------------------------------------------------------
@@ -387,6 +387,15 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // ll_ei+= epmodel.avg_log_p(epdta);
       }
       // ----------------------------------------------------------------------------
+      // SUBmodule 2: Beta | C, L, pr
+      // ----------------------------------------------------------------------------
+      if(iter > 0) {
+        for(int ie2=0; ie2<dta.ne(sub); ie2++){
+          par.beta(sub)(ie2) = sampcoh(par.L(sub).slice(ie2), par.C.slice(sub),
+                   pr.a1, pr.b1);
+        }
+      }
+      // ----------------------------------------------------------------------------
       // SUBmodule 1: Ci | alpha, pi
       // ----------------------------------------------------------------------------
       mat llc = zeros(K, dta.np);
@@ -395,18 +404,19 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
 
       for(int ne=0; ne<dta.ne(sub); ne++) llc += nu_est(par.L(sub).slice(ne), par.beta(sub)(ne));
       par.C.slice(sub) = mrmultinom(llc);
-      if(iter >= run/4.0) {
+      if(iter >= run/5.0) {
         clustalign(par.C.slice(sub), par.S);
       } else {
         clustalign(par.C.slice(sub), newref);
       }
       // clustalign(par.C.slice(sub), newref);
-      // ----------------------------------------------------------------------------
-      // SUBmodule 2: Beta | C, L, pr
-      // ----------------------------------------------------------------------------
-      for(int ie2=0; ie2<dta.ne(sub); ie2++){
-        par.beta(sub)(ie2) = sampcoh(par.L(sub).slice(ie2), par.C.slice(sub),
-                 pr.a1, pr.b1);
+    }
+    // ----------------------------------------------------------------------------
+    // POPmodule 2: Alpha | S, C, pr
+    // ----------------------------------------------------------------------------
+    if(iter > 0){
+      for(int ie3=0; ie3<dta.ns; ie3++){
+        par.alpha(ie3) = sampcoh(par.C.slice(ie3), par.S, pr.a1, pr.b1);
       }
     }
     // ------------------------------------------------------------------------------
@@ -416,12 +426,6 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     for(int sp=0; sp<dta.np; sp++) lls.col(sp) += arma::log(par.pi);
     for(int ss=0; ss<dta.ns; ss++) lls += nu_est(par.C.slice(ss), par.alpha(ss));
     par.S = mrmultinom(lls);
-    // ----------------------------------------------------------------------------
-    // POPmodule 2: Alpha | S, C, pr
-    // ----------------------------------------------------------------------------
-    for(int ie3=0; ie3<dta.ns; ie3++){
-      par.alpha(ie3) = sampcoh(par.C.slice(ie3), par.S, pr.a1, pr.b1);
-    }
     // ----------------------------------------------------------------------------
     // POPmodule 7: pi |
     // ----------------------------------------------------------------------------
@@ -441,7 +445,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     //-----------------------------------------------------------------------------
     // 1/5 burning in + thining + discard tempring rounds (0-4 every 100its)
     // if((iter >= run/5.0) && (iter % thin == 0) && (iter % 100 > 4)){
-    if((iter>=run/4.0) && (iter%thin==0)){
+    if((iter>=run/5.0) && (iter%thin==0)){
       OutputSample();
       //
       // Epoch output
