@@ -13,7 +13,6 @@
 #' }
 #'
 #' @importFrom graphics box plot points
-#' @importFrom class knn
 #' @export
 EEGplot <- function(clust, color = NULL)
 { # A few checks
@@ -38,7 +37,7 @@ EEGplot <- function(clust, color = NULL)
                                y = seq(-1.08,1.08,by=.01))
     samp_lab <- (samp_points$x^2+samp_points$y^2) < 1.08^2
     samp_points <- samp_points[samp_lab,]
-    samp_col <- knn(EEGcoords[,c(2,3)], samp_points,clust)
+    samp_col <- class::knn(EEGcoords[,c(2,3)], samp_points,clust)
     points(x = samp_points$x, y = samp_points$y, pch = ".", col = color[samp_col])
   }
   # channels

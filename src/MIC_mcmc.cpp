@@ -278,7 +278,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   // prior declaration:
   pr.b0   = 0.001;                                       //NIG
   pr.a1   = 1;                   pr.b1   = 1;           //Tbeta
-  pr.dir0 = vec(K);              pr.dir0.fill(1.0);     //Dirichlet
+  pr.dir0 = vec(K);              pr.dir0.fill(3.0);     //Dirichlet
   pr.mu0  = field< vec >(dta.ns);                       //NIG-means
   pr.dcov0= field< vec >(dta.ns);                       //NIG-vars
   for(int sub=0; sub<dta.ns; sub++){
@@ -367,13 +367,13 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // -- Option1:
         // if(iter > 0) clustalign(par.L(sub).slice(ie), par.S);
         // -- Option2:
-        clustalign(par.L(sub).slice(ie), newref);
+        // clustalign(par.L(sub).slice(ie), newref);
         // -- Option3:
-        // if(iter>=run/4.0){
-        //   clustalign(par.L(sub).slice(ie), par.S);
-        // } else {
-        //   clustalign(par.L(sub).slice(ie), newref);
-        // }
+        if(iter>=run/4.0){
+          clustalign(par.L(sub).slice(ie), par.S);
+        } else {
+          clustalign(par.L(sub).slice(ie), newref);
+        }
         // --------------------------------------------------------------------------
         // EPmodule 5: ICs: ll_c(conditional|L); ll_i(integrated); ll_ei (expected i)
         // --------------------------------------------------------------------------
