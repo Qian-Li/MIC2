@@ -367,13 +367,13 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // -- Option1:
         // if(iter > 0) clustalign(par.L(sub).slice(ie), par.S);
         // -- Option2:
-        // clustalign(par.L(sub).slice(ie), newref);
+        clustalign(par.L(sub).slice(ie), newref);
         // -- Option3:
-        if(iter>=run/4.0){
-          clustalign(par.L(sub).slice(ie), par.S);
-        } else {
-          clustalign(par.L(sub).slice(ie), newref);
-        }
+        // if(iter>=run/4.0){
+        //   clustalign(par.L(sub).slice(ie), par.S);
+        // } else {
+        //   clustalign(par.L(sub).slice(ie), newref);
+        // }
         // --------------------------------------------------------------------------
         // EPmodule 5: ICs: ll_c(conditional|L); ll_i(integrated); ll_ei (expected i)
         // --------------------------------------------------------------------------
