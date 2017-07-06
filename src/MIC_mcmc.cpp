@@ -342,6 +342,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         // --------------------------------------------------------------------------
         vec tempi = arma::conv_to< vec >::from(mpi);
         rowvec mpij = mixpr(tempi, par.beta(sub)(ie));
+        mpij = mpij / arma::accu(mpij);
         mpij[0] = 1.0 - arma::accu(mpij(span(1,K-1)));
         // --------------------------------------------------------------------------
         // EPmodule 2: NIG | L, data, pr
@@ -404,7 +405,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
 
       for(int ne=0; ne<dta.ne(sub); ne++) llc += nu_est(par.L(sub).slice(ne), par.beta(sub)(ne));
       par.C.slice(sub) = mrmultinom(llc);
-      if(iter >= run/5.0) {
+      if(iter >= run/10.0) {
         clustalign(par.C.slice(sub), par.S);
       } else {
         clustalign(par.C.slice(sub), newref);
@@ -427,7 +428,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     for(int ss=0; ss<dta.ns; ss++) lls += nu_est(par.C.slice(ss), par.alpha(ss));
     par.S = mrmultinom(lls);
     // After burn-in use the par.S as new reference
-    if((iter - run/5.0) < 0.1) newref = par.S;
+    if(abs(iter - run/5.0) < 0.1) newref = par.S;
     // ----------------------------------------------------------------------------
     // POPmodule 7: pi |
     // ----------------------------------------------------------------------------
