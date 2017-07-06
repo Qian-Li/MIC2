@@ -405,8 +405,8 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
 
       for(int ne=0; ne<dta.ne(sub); ne++) llc += nu_est(par.L(sub).slice(ne), par.beta(sub)(ne));
       par.C.slice(sub) = mrmultinom(llc);
-      if(iter >= run/10.0) {
-        clustalign(par.C.slice(sub), par.S);
+      if(iter >= run/5.0) {
+        // clustalign(par.C.slice(sub), par.S);
       } else {
         clustalign(par.C.slice(sub), newref);
       }
@@ -428,7 +428,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     for(int ss=0; ss<dta.ns; ss++) lls += nu_est(par.C.slice(ss), par.alpha(ss));
     par.S = mrmultinom(lls);
     // After burn-in use the par.S as new reference
-    if(abs(iter - run/5.0) < 0.1) newref = par.S;
+    if(abs(iter - run/10.0) < 0.1) newref = par.S;
     // ----------------------------------------------------------------------------
     // POPmodule 7: pi |
     // ----------------------------------------------------------------------------
