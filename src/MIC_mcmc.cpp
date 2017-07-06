@@ -426,6 +426,8 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     for(int sp=0; sp<dta.np; sp++) lls.col(sp) += arma::log(par.pi);
     for(int ss=0; ss<dta.ns; ss++) lls += nu_est(par.C.slice(ss), par.alpha(ss));
     par.S = mrmultinom(lls);
+    // After burn-in use the par.S as new reference
+    if((iter - run/5.0) < 0.1) newref = par.S;
     // ----------------------------------------------------------------------------
     // POPmodule 7: pi |
     // ----------------------------------------------------------------------------
