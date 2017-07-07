@@ -405,11 +405,11 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
 
       for(int ne=0; ne<dta.ne(sub); ne++) llc += nu_est(par.L(sub).slice(ne), par.beta(sub)(ne));
       par.C.slice(sub) = mrmultinom(llc);
-      // if(iter >= run/5.0) {
-      //   // clustalign(par.C.slice(sub), par.S);
-      // } else {
-      //   clustalign(par.C.slice(sub), newref);
-      // }
+      if(iter >= run/10.0) {
+        // clustalign(par.C.slice(sub), par.S);
+      } else {
+        clustalign(par.C.slice(sub), newref);
+      }
       // clustalign(par.C.slice(sub), newref);
     }
     // ----------------------------------------------------------------------------
