@@ -323,7 +323,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   out1.open(fout_pop);                                // pop.txt   pop output
   out2.open(fout_sub);                                // sub.txt   sub output
   // Output counter
-  int oc = 0;
+  int oc = 0; double ref_s = 0.0; colvec Spr;
   // ----------------------------Gibbs Sampler---------------------------------------
   for(int iter=0; iter<run; iter++){
     par.pi /= std::accumulate(par.pi.begin(), par.pi.end(), 0.0);
@@ -405,11 +405,11 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
 
       for(int ne=0; ne<dta.ne(sub); ne++) llc += nu_est(par.L(sub).slice(ne), par.beta(sub)(ne));
       par.C.slice(sub) = mrmultinom(llc);
-      if(iter >= run/5.0) {
-        // clustalign(par.C.slice(sub), par.S);
-      } else {
-        clustalign(par.C.slice(sub), newref);
-      }
+      // if(iter >= run/5.0) {
+      //   // clustalign(par.C.slice(sub), par.S);
+      // } else {
+      //   clustalign(par.C.slice(sub), newref);
+      // }
       // clustalign(par.C.slice(sub), newref);
     }
     // ----------------------------------------------------------------------------
@@ -428,7 +428,15 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     for(int ss=0; ss<dta.ns; ss++) lls += nu_est(par.C.slice(ss), par.alpha(ss));
     par.S = mrmultinom(lls);
     // After burn-in use the par.S as new reference
-    if(abs(iter - run/10.0) < 0.1) newref = par.S;
+    // if(abs(iter - run/10.0) < 0.1) newref = par.S;
+    if(iter >= run/10.0 && iter <= run/5.0){
+      Spr = sum(par.S, 1) / (dta.np+0.0);
+      double score = arma::accu(arma::log(Spr)+0.0001);
+      if(score > ref_s){
+        ref_s = score;
+        newref = par.S;
+      }
+    }
     // ----------------------------------------------------------------------------
     // POPmodule 7: pi |
     // ----------------------------------------------------------------------------
