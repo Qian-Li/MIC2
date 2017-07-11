@@ -10,6 +10,41 @@ arma::mat mrmultinom(arma::mat const &llm){
   vec rvec = randu<vec>(ni);                 // Alternative approach
   for(int jj=0; jj<ni; jj++){
     colvec prob = arma::exp(llm.col(jj) - logsum(llm.col(jj)));
+    prob += 0.0001; prob /= arma::accu(prob); //num hack
+    // colvec prob = arma::exp(llm.col(jj));  // Less stable version, but faster.
+    // prob /= std::accumulate(prob.begin(), prob.end(), 0.0);
+    int ii = 0;
+    if(rvec[jj] == 0.0){
+      samp(0, jj) = (int) 1;
+      continue;
+    }
+    while(rvec[jj] > 0.0){
+      rvec[jj] -= prob[ii];
+      if (rvec[jj] <= 0.0) {
+        samp(ii,jj) = (int) 1;
+        break;
+      } else ii++;
+      if(ii >= llm.n_rows){
+        samp(ii-1, jj) = (int) 1;
+        break;
+      }
+    }
+  }
+  return samp;
+}
+//
+//
+/***********************************************************************************/
+/* mrmultinom: matrix multinomial                                                  */
+/***********************************************************************************/
+// Tested
+arma::mat mrmultinom0(arma::mat const &llm){
+  int ni = llm.n_cols;      //int nc = llm.n_rows;
+  mat samp = arma::zeros(size(llm));
+  vec rvec = randu<vec>(ni);                 // Alternative approach
+  for(int jj=0; jj<ni; jj++){
+    colvec prob = arma::exp(llm.col(jj) - logsum(llm.col(jj)));
+    // prob += 0.0001; prob /= arma::accu(prob); //num hack
     // colvec prob = arma::exp(llm.col(jj));  // Less stable version, but faster.
     // prob /= std::accumulate(prob.begin(), prob.end(), 0.0);
     int ii = 0;

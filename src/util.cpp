@@ -67,15 +67,16 @@ void clustalign(arma::mat &now, arma::mat const &ref){
 NIG NIGpost(arma::mat const &data, subprior const &pr, arma::mat const &C){
   NIG post;
   int d = data.n_rows;  int p = data.n_cols;  int k = C.n_rows;
+  colvec datstd = var(data, 0, 1);
   post.means = randn<mat> (d,k); post.dcovs = zeros<mat> (d,k);
   post.Emeans= zeros<mat> (d,k); post.Edcovs= zeros<mat> (d,k);
   colvec csize = arma::sum(C,1);
   for(int c=0; c<k; c++){
-    if(csize(c) <= 1.0){ // empty cluster
+    if(csize(c) < 1.0){ // empty cluster
       post.means.col(c)   = pr.mu0;
-      post.dcovs.col(c)   = pr.dcov0;
+      post.dcovs.col(c)   = datstd;
       post.Emeans.col(c)  = pr.mu0;
-      post.Edcovs.col(c)  = pr.dcov0;
+      post.Edcovs.col(c)  = datstd;
       continue;
     }
     for(int dim=0; dim<d; dim++){
@@ -88,15 +89,15 @@ NIG NIGpost(arma::mat const &data, subprior const &pr, arma::mat const &C){
         }
       }
       double mupost = (pr.mu0(dim) + smean) / (csize(c) + 1.0);
-      double b = pr.b0 + 0.5 * (ssqr - csize(c) * std::pow(smean/csize(c), 2.0) +
-        std::pow((smean/csize(c) - pr.mu0(dim)), 2.0) *
+      double b = pr.b0 + 0.5 * (ssqr - csize(c) * std::pow(smean/(csize(c)+0.0), 2.0) +
+        std::pow((smean/(csize(c)+0.0) - pr.mu0(dim)), 2.0) *
         csize(c) / (csize(c) + 1.0));
       double tau = Rf_rgamma(shape, 1.0/b);
       post.dcovs(dim, c) = std::pow(tau, -1.0);
       double sig = std::pow(tau*(csize(c) + 1.0), -0.5);
       post.means(dim,c)  = post.means(dim,c) * sig + mupost;
       post.Emeans(dim,c) = mupost;
-      post.Edcovs(dim,c) = b/(shape+1.0);
+      post.Edcovs(dim,c) = b/shape;
     }
   }
   return post;

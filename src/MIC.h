@@ -50,14 +50,14 @@ struct PAR{                           // Parameters to be tracked and updated---
 /************************************************************************************/
 struct prior{                         // Priors -------------------------------------;
   vec           dir0;                 // Dirichlet prior;
-  field<vec>    mu0;                  // NIG means, initialized as epoch mean
-  field<vec>    dcov0;                 // NIG sigs, initialized as sample std
+  field<mat>    mu0;                  // NIG means, initialized as epoch mean
+  field<mat>    dcov0;                // NIG sigs, initialized as sample std
   double        b0;                   // NIG igamma prior (rate), E fixed as samp cov
   double        a1;                   // TBeta prior shape1
   double        b1;                   // TBeta prior shape2
 };
 
-struct subprior{                      // Subject level NIG prior---------------------;
+struct subprior{                      // epoch level NIG prior  ---------------------;
   vec           mu0;
   vec           dcov0;
   double        b0;
@@ -66,6 +66,7 @@ struct subprior{                      // Subject level NIG prior----------------
 /* Random Number Generators                                                         */
 /************************************************************************************/
 arma::mat     mrmultinom(arma::mat const &llm);
+arma::mat     mrmultinom0(arma::mat const &llm);
 double        sampcoh(arma::mat const &L, arma::mat const &C,
                             double const &a, double const &b);
 arma::vec     rDir(arma::colvec const &tot, double const &dir0);
