@@ -97,7 +97,7 @@ NIG NIGpost(arma::mat const &data, subprior const &pr, arma::mat const &C){
       double sig = std::pow(tau*(csize(c) + 1.0), -0.5);
       post.means(dim,c)  = post.means(dim,c) * sig + mupost;
       post.Emeans(dim,c) = mupost;
-      post.Edcovs(dim,c) = b/shape;
+      post.Edcovs(dim,c) = b/(shape-1.0);
     }
   }
   return post;
