@@ -465,7 +465,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         for(uword k=0; k<K; k++){
           ll.row(k) = epmodel.log_p(epdta, k);
         }
-        ll_e += arma::accu(par.L(sub).slice(ie) % ll) / dta.np;
+        ll_e += arma::accu(par.L(sub).slice(ie) % ll) / (dta.np+0.0);
       }
     }
     par.ll_e = ll_e / arma::accu(dta.ne);
@@ -473,8 +473,9 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
   // IC's calculation
   vec ICs(2,fill::zeros);
   {
+    double total_e = arma::accu(dta.ne);
     double BIC_c = (2.0 * K * arma::accu(dta.d % dta.ne) + K - 1.0) *
-      std::log(dta.np) / arma::accu(dta.ne) / (dta.np+0.0);
+      (std::log(dta.np+0.0) + std::log(total_e)) / total_e / (dta.np+0.0);
     ICs[0] = 2.0 * par.ll_e - BIC_c;      //BIC
     // ICs[1] = 2.0 * par.ll_ei - BIC_c;     //BIC2
     // ICs[2] = 2.0 * par.ll_i - par.ll_ei;  //DIC4
