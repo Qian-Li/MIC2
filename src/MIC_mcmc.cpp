@@ -275,7 +275,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
     par.L(sub) = cube(K, dta.np, dta.ne(sub));  par.L(sub).fill(0);
   }
   // prior declaration:
-  pr.b0   = 0.001;                                      //NIG(uninformative)
+  pr.b0   = 0.0001;                                      //NIG(uninformative)
   pr.a1   = 1;                   pr.b1   = 1;           //Tbeta
   pr.dir0 = vec(K);              pr.dir0.fill(3.0);     //Dirichlet********************
   pr.mu0  = field< mat >(dta.ns);                       //NIG-means

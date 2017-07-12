@@ -80,7 +80,10 @@ NIG NIGpost(arma::mat const &data, subprior const &pr, arma::mat const &C){
       continue;
     }
     for(int dim=0; dim<d; dim++){
-      double shape = csize(c)/2.0 + 1.0 + (double) pr.b0/ pr.dcov0(dim);
+      // double shape = csize(c)/2.0 + 1.0 + (double) pr.b0/ pr.dcov0(dim); //fixed rate
+      // double b = pr.b0;                                                  //fixed rate
+      double shape = 2.0 + pr.b0 + csize(c) / 2.0;    //fixed shape
+      double b     = (1.0 + pr.b0) * pr.dcov0(dim);   //fixed shape
       double smean=0.0;     double ssqr=0.0;
       for(int ep=0; ep<p; ep++){
         if(C(c,ep) > .9){
@@ -89,7 +92,7 @@ NIG NIGpost(arma::mat const &data, subprior const &pr, arma::mat const &C){
         }
       }
       double mupost = (pr.mu0(dim) + smean) / (csize(c) + 1.0);
-      double b = pr.b0 + 0.5 * (ssqr - csize(c) * std::pow(smean/(csize(c)+0.0), 2.0) +
+      b +=  0.5 * (ssqr - csize(c) * std::pow(smean/(csize(c)+0.0), 2.0) +
         std::pow((smean/(csize(c)+0.0) - pr.mu0(dim)), 2.0) *
         csize(c) / (csize(c) + 1.0));
       double tau = Rf_rgamma(shape, 1.0/b);
@@ -97,7 +100,7 @@ NIG NIGpost(arma::mat const &data, subprior const &pr, arma::mat const &C){
       double sig = std::pow(tau*(csize(c) + 1.0), -0.5);
       post.means(dim,c)  = post.means(dim,c) * sig + mupost;
       post.Emeans(dim,c) = mupost;
-      post.Edcovs(dim,c) = b/(shape-1.0);
+      post.Edcovs(dim,c) = b/(shape+1.0);
     }
   }
   return post;
