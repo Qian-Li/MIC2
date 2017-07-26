@@ -12,7 +12,7 @@
 #' @param thin, integer as thinning every few iterations
 #'
 MIC_mcmc <- function(data, K, run, thin) {
-    .Call('MIC2_MIC_mcmc', PACKAGE = 'MIC2', data, K, run, thin)
+    .Call('_MIC2_MIC_mcmc', PACKAGE = 'MIC2', data, K, run, thin)
 }
 
 #' Cpp function for Parzen window smoothed power spectral density
@@ -28,7 +28,7 @@ MIC_mcmc <- function(data, K, run, thin) {
 #' @return vector of estimated spectral density of length \code{outn}
 #'
 specParzen <- function(ts, lag, maxf, outn) {
-    .Call('MIC2_specParzen', PACKAGE = 'MIC2', ts, lag, maxf, outn)
+    .Call('_MIC2_specParzen', PACKAGE = 'MIC2', ts, lag, maxf, outn)
 }
 
 #' Spectral similarity based on Total Variation Distance (TVD)
@@ -49,7 +49,7 @@ specParzen <- function(ts, lag, maxf, outn) {
 #' @seealso \code{\link{spec.parzen}} for spectral density estimates and \code{\link{MIC_prep}}
 #'   for time series preprocessing before \code{\link{MIC}}
 SpecSim <- function(ts, lag, wn, win, overlap, specN) {
-    .Call('MIC2_SpecSim', PACKAGE = 'MIC2', ts, lag, wn, win, overlap, specN)
+    .Call('_MIC2_SpecSim', PACKAGE = 'MIC2', ts, lag, wn, win, overlap, specN)
 }
 
 #' Eigen Laplacian transformation
@@ -69,7 +69,7 @@ SpecSim <- function(ts, lag, wn, win, overlap, specN) {
 #' @seealso \code{\link{MIC_prep}} for its usage.
 #'
 EigLap <- function(data, D, normal) {
-    .Call('MIC2_EigLap', PACKAGE = 'MIC2', data, D, normal)
+    .Call('_MIC2_EigLap', PACKAGE = 'MIC2', data, D, normal)
 }
 
 #' Spectral densities averaged by overlapped sliding windows
@@ -88,7 +88,7 @@ EigLap <- function(data, D, normal) {
 #' @seealso \code{\link{spec.parzen}} for spectral density estimates and \code{\link{MIC_prep}}
 #'   for time series preprocessing before \code{\link{MIC}}
 SpecOnly <- function(ts, lag, wn, win, overlap, specN) {
-    .Call('MIC2_SpecOnly', PACKAGE = 'MIC2', ts, lag, wn, win, overlap, specN)
+    .Call('_MIC2_SpecOnly', PACKAGE = 'MIC2', ts, lag, wn, win, overlap, specN)
 }
 
 #' Cpp function for aligning indicator matrices
@@ -103,6 +103,6 @@ SpecOnly <- function(ts, lag, wn, win, overlap, specN) {
 #' @return no value returned, and matrix \code{now} is aligned on the spot
 #'
 clustalign <- function(now, ref) {
-    invisible(.Call('MIC2_clustalign', PACKAGE = 'MIC2', now, ref))
+    invisible(.Call('_MIC2_clustalign', PACKAGE = 'MIC2', now, ref))
 }
 

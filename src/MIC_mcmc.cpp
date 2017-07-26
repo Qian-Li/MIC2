@@ -378,6 +378,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
       if(iter > 0) llc.each_col() += arma::log(mpi.t());         //MIC2
       for(int ne=0; ne<dta.ne(sub); ne++) llc += nu_est(par.L(sub).slice(ne), par.beta(sub)(ne));
       par.C.slice(sub) = mrmultinom0(llc);    //use mrmultinom for MIC1
+      if (iter > 0) clustalign(par.C.slice(sub), par.S);
       // ----------------------------------------------------------------------------
       // SUBmodule 2: Beta | C, L, pr
       // ----------------------------------------------------------------------------

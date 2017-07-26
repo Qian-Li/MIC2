@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // MIC_mcmc
 List MIC_mcmc(Rcpp::List const& data, int const& K, int const& run, int const& thin);
-RcppExport SEXP MIC2_MIC_mcmc(SEXP dataSEXP, SEXP KSEXP, SEXP runSEXP, SEXP thinSEXP) {
+RcppExport SEXP _MIC2_MIC_mcmc(SEXP dataSEXP, SEXP KSEXP, SEXP runSEXP, SEXP thinSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,7 +22,7 @@ END_RCPP
 }
 // specParzen
 arma::vec specParzen(arma::vec const& ts, int lag, int const& maxf, int const& outn);
-RcppExport SEXP MIC2_specParzen(SEXP tsSEXP, SEXP lagSEXP, SEXP maxfSEXP, SEXP outnSEXP) {
+RcppExport SEXP _MIC2_specParzen(SEXP tsSEXP, SEXP lagSEXP, SEXP maxfSEXP, SEXP outnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -36,7 +36,7 @@ END_RCPP
 }
 // SpecSim
 arma::cube SpecSim(arma::cube const& ts, int lag, int const& wn, int const& win, int const& overlap, int const& specN);
-RcppExport SEXP MIC2_SpecSim(SEXP tsSEXP, SEXP lagSEXP, SEXP wnSEXP, SEXP winSEXP, SEXP overlapSEXP, SEXP specNSEXP) {
+RcppExport SEXP _MIC2_SpecSim(SEXP tsSEXP, SEXP lagSEXP, SEXP wnSEXP, SEXP winSEXP, SEXP overlapSEXP, SEXP specNSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -52,7 +52,7 @@ END_RCPP
 }
 // EigLap
 arma::cube EigLap(arma::cube  const& data, int         const& D, bool        const& normal);
-RcppExport SEXP MIC2_EigLap(SEXP dataSEXP, SEXP DSEXP, SEXP normalSEXP) {
+RcppExport SEXP _MIC2_EigLap(SEXP dataSEXP, SEXP DSEXP, SEXP normalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -65,7 +65,7 @@ END_RCPP
 }
 // SpecOnly
 arma::cube SpecOnly(arma::cube const& ts, int lag, int const& wn, int const& win, int const& overlap, int const& specN);
-RcppExport SEXP MIC2_SpecOnly(SEXP tsSEXP, SEXP lagSEXP, SEXP wnSEXP, SEXP winSEXP, SEXP overlapSEXP, SEXP specNSEXP) {
+RcppExport SEXP _MIC2_SpecOnly(SEXP tsSEXP, SEXP lagSEXP, SEXP wnSEXP, SEXP winSEXP, SEXP overlapSEXP, SEXP specNSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -81,7 +81,7 @@ END_RCPP
 }
 // clustalign
 void clustalign(arma::mat& now, arma::mat const& ref);
-RcppExport SEXP MIC2_clustalign(SEXP nowSEXP, SEXP refSEXP) {
+RcppExport SEXP _MIC2_clustalign(SEXP nowSEXP, SEXP refSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat& >::type now(nowSEXP);
@@ -89,4 +89,19 @@ BEGIN_RCPP
     clustalign(now, ref);
     return R_NilValue;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_MIC2_MIC_mcmc", (DL_FUNC) &_MIC2_MIC_mcmc, 4},
+    {"_MIC2_specParzen", (DL_FUNC) &_MIC2_specParzen, 4},
+    {"_MIC2_SpecSim", (DL_FUNC) &_MIC2_SpecSim, 6},
+    {"_MIC2_EigLap", (DL_FUNC) &_MIC2_EigLap, 3},
+    {"_MIC2_SpecOnly", (DL_FUNC) &_MIC2_SpecOnly, 6},
+    {"_MIC2_clustalign", (DL_FUNC) &_MIC2_clustalign, 2},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_MIC2(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
