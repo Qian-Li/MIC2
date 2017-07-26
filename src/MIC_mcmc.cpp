@@ -346,7 +346,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         arma::gmm_diag epmodel;
         epmodel.set_params(post.means, post.dcovs, mpij);
         mat ll = zeros(K, dta.np);
-        for(uword ek=0; ek<K; ek++){
+        for(int ek=0; ek<K; ek++){
           ll.row(ek) = epmodel.log_p(epdta, ek);
         }
         // mat ll2 = ll; //for IC calculation
@@ -463,7 +463,7 @@ List MIC_mcmc(Rcpp::List const &data,       // Data as R-List of 3D array:d,p,ne
         mpij[0] = 1-accu(mpij(span(1,K-1)));  // numerical check...
         epmodel.set_params(post.Emeans, post.Edcovs, mpij);
         mat ll(K, dta.np);
-        for(uword k=0; k<K; k++){
+        for(int k=0; k<K; k++){
           ll.row(k) = epmodel.log_p(epdta, k);
         }
         ll_e += arma::accu(par.L(sub).slice(ie) % ll) / (dta.np+0.0);

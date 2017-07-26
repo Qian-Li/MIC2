@@ -44,7 +44,8 @@ arma::vec specParzen(arma::vec const &ts,
                      int const &maxf,
                      int const &outn){
   // maximum lag as N-1;
-  lag = (int) (lag<ts.n_elem)? lag : (ts.n_elem-1);
+  int len = ts.n_elem;
+  lag = (int) (lag < len)? lag : (len - 1);
   arma::vec xcovs = myacf(ts, lag);                     //acf
   arma::vec win   = linspace(0,1,(lag+1));              //parzen win
   // Parzen window of lag+1;
