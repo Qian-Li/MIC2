@@ -22,9 +22,9 @@ arma::mat vec2adj(arma::vec const& cl){
 /***********************************************************************************/
 //
 arma::colvec postCI(arma::colvec sample, double const& lvl){
-  int auto const Q1 = (int) (sample.n_elem*(1.0 - lvl)/2.0);
-  int auto const Q2 = (int) (sample.n_elem/2);
-  int auto const Q3 = (int) (sample.n_elem - Q1);
+  int const Q1 = (sample.n_elem*(1.0 - lvl)/2.0);
+  int const Q2 = (sample.n_elem/2);
+  int const Q3 = (sample.n_elem - Q1);
 
   arma::colvec qs(3);
   std::nth_element(sample.begin(),          sample.begin() + Q1, sample.end());

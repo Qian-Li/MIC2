@@ -20,3 +20,4 @@ Suggests: knitr,
     rmarkdown,
     MASS
 VignetteBuilder: knitr
+SystemRequirements: C++11
