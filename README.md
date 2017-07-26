@@ -10,7 +10,7 @@ See our manuscript for further details and applications!
 
 To install the package with an introductive vignette, please install with
 the `build_vignettes = TRUE` option. After installation, the vignette 
-is available by `util::vignette('MIC2-intro')
+is available by `utils::vignette('MIC2-intro')`.
 
 # Quick Example
 
