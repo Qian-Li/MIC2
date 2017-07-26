@@ -2,6 +2,9 @@
 // RE-run!!
 // tools::package_native_routine_registration_skeleton("~/Research/MIC2")
 //
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::plugins(cpp11)]]
+//
 /***********************************************************************************/
 /* myacf: autocovariance function                                                  */
 /***********************************************************************************/

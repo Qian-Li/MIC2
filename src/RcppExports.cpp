@@ -90,18 +90,3 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-
-static const R_CallMethodDef CallEntries[] = {
-    {"_MIC2_MIC_mcmc", (DL_FUNC) &_MIC2_MIC_mcmc, 4},
-    {"_MIC2_specParzen", (DL_FUNC) &_MIC2_specParzen, 4},
-    {"_MIC2_SpecSim", (DL_FUNC) &_MIC2_SpecSim, 6},
-    {"_MIC2_EigLap", (DL_FUNC) &_MIC2_EigLap, 3},
-    {"_MIC2_SpecOnly", (DL_FUNC) &_MIC2_SpecOnly, 6},
-    {"_MIC2_clustalign", (DL_FUNC) &_MIC2_clustalign, 2},
-    {NULL, NULL, 0}
-};
-
-RcppExport void R_init_MIC2(DllInfo *dll) {
-    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
-    R_useDynamicSymbols(dll, FALSE);
-}
