@@ -1,30 +1,25 @@
----
-title: "A Quick Introduction to MIC2"
-author: "Qian Li"
-date: "2017-07-26"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Vignette Title}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
+# Introduction to MIC2 Package
 
-`MIC2`^[The first version of `MIC` is implemented in basic R, whereas the current version used `Rcpp` that yields a 40$+$ times efficiency boost.] 
+`MIC2`<sup>[1](#myfootnote1)</sup>
 is a R package performing Multilevel Integrative Clustering, which allows for integrating information
-from multiple heterogeneous sources to make group level inference. It was originally developed to cluster (partition)
-brain regions using electroencephalogram(EEG) signals, especially its spectral features, but can be easily generalized
-under various scientific contexts. This introduction will demonstrate the full functionality of `MIC2` package, using
-examples of simple gaussian mixtures and simulated EEG signals to illustrate the workflow to implement `MIC` accordingly.
-For more of its details, our manuscipt is available [here](https://arxiv.org/abs/1609.09532)
+over multiple heterogeneous sources to facilitate group level inference. It was originally developed to cluster (partition)
+electroencephalogram (EEG) electrodes (equivalently patches of scalp they are attached to) based on the recorded signals and features, 
+but can be easily generalized to accommodate to various scientific contexts. This introduction will demonstrate the full functionality 
+of the `MIC2` package, using examples from simple 2-D gaussian mixtures, that can be discerned visually, to simulated EEG signals, 
+and more importantly, the workflow to implement `MIC` accordingly.
+For more of its details, please refer to our manuscipt [here](https://arxiv.org/abs/1609.09532).
 
 ## Installation
 
 ```r
-devtools::install_github("Qian-Li/MIC2")     ## to install
-library(MIC2)                                 ## loading
+devtools::install_github("Qian-Li/MIC2")    ## to install
+library(MIC2)                               ## to load
 ```
-## Gaussian Mixtures
+This vignette is locally available with an extra option: `devtools::install_github("Qian-Li/MIC2", build_vignettes = T)` when
+installing the package. To view it, `utils::vignette('MIC2-intro')`. Please re-install the package with the `build_vignettes` option
+on if having touble openning it.
 
+## Gaussian Mixtures
 
 In this example, we simulate a group of 3 subjects, each with 3 repeated measurements collected on 30 items, 10 per group,
 that were simulated from a 2-D gaussian mixture distribution. The correct partition on 30 items is unclear at a particular
@@ -32,7 +27,7 @@ measurement, however, the idea is to integrate information across repetitions by
 and across individuals for an optimal group level partition. As shown below, the simulated data for 3 subjects (in rows) on 3 repeated
 measurements (in columns) is colored by their true group labels.
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
+![Simulated Gaussian Mixtures](figure/unnamed-chunk-3-1.png)
 
 To figure out the optimal label at all levels, i.e. group individual and repetitions, `MIC` admits data as a list of 3-D arrays,
 whose components are repeated measurements stacked in the 3rd dimension and items in the 2nd dimension, for each individual.
@@ -65,7 +60,7 @@ out$alpha
 ## sub3 0.4783365 0.345603 0.459441 0.676453
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
+![MIC fitting results](figure/unnamed-chunk-6-1.png)
 
 By scattering the original data, points are colored according to the `MIC` optimal individual level labels, but their shapes
 are determined by the optimal repetition level labels. The coherence parameter indicates the proximity between
@@ -91,6 +86,7 @@ sim <- MIC_sim(alpha = 0.9,  nsub = 5, fs = 200, segs = 20)
 ## -- optimal model search, with a smoothing setting of window = 4, overlap of 2.(takes approx 3mins)
 out <- dk_search(sim$Data, max_d = 10, n.iter = 5000, par.win = c(4, 2))
 ## ## -- search log -- ##
+## ----------------------------------------- 
 ## D = 2: best_K = 3 COH = 0.8568124
 ## ----------------------------------------- 
 ## D = 3: best_K = 4 COH = 0.8476597
@@ -153,4 +149,6 @@ The 125th-129th electrodes were excluded in this plot, and the label estimates a
 par(oma = rep(0,4), mar = rep(0.5,4)); EEGplot(clust = label, color = colors)
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
+![Example of EEGplot](figure/unnamed-chunk-13-1.png)
+
+<a name="myfootnote1">1</a>: The first version of `MIC` is implemented in basic R, whereas the current version used `Rcpp` that yields a 40+ times efficiency boost.

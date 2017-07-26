@@ -6,11 +6,7 @@ Multilevel Integrative Clustering (MIC recoded in C++), packaged by Qian Li
 devtools::install_github("Qian-Li/MIC2")
 ```
 
-See our manuscript for further details and applications!
-
-To install the package with an introductive vignette, please install with
-the `build_vignettes = TRUE` option. After installation, the vignette 
-is available by `utils::vignette('MIC2-intro')`.
+More technical details are available in [this introduction](MIC2-intro.md) and our [manuscript](https://arxiv.org/abs/1609.09532).
 
 # Quick Example
 
