@@ -9,7 +9,7 @@ pars(eta, M = 1.1, fs)
 \arguments{
 \item{eta}{numeric, peak location}
 
-\item{M}{numeric, dispersion of power with narrower peak as M approximates 1}
+\item{M}{numeric, dispersion of power with narrower peak as M approximates 1, default at 1.1}
 
 \item{fs}{sampling frequency}
 }

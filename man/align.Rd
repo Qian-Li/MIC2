@@ -11,7 +11,7 @@ align(refL, L, type = "vec")
 
 \item{L}{vector or matrix, label to be aligned.}
 
-\item{type}{what type of input format: "\code{vec}" or "\code{mat}"}
+\item{type}{what type of input format: "\code{vec}" or "\code{mat}", default as 'vec'.}
 }
 \value{
 \code{L}, aligned against \code{refL} with maximal concordance.

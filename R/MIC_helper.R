@@ -4,7 +4,7 @@
 #'  sampling frequency.
 #'
 #' @param eta numeric, peak location
-#' @param M   numeric, dispersion of power with narrower peak as M approximates 1
+#' @param M   numeric, dispersion of power with narrower peak as M approximates 1, default at 1.1
 #' @param fs  sampling frequency
 #' @return vector of AR(2) coefficients
 #' @seealso \code{\link{MIC_sim}} for its usage
@@ -33,7 +33,7 @@ pars<- function(eta, M = 1.1, fs){
 #' @param x vector, a univariate time series.
 #' @param a integer, max lag to truncate the sample ACF estimates, default \code{length(x)-1} (no truncation).
 #'   It has to be smaller than the length fo time seires \code{x}.
-#' @param nn integer, resolution of the spectral estimates (number of points on frequency domain).
+#' @param nn integer, resolution of the spectral estimates (number of points on frequency domain), default at 512
 #'
 #' @return List of the following items:
 #'   \item{\code{freq}}{frequencies where PSD is evaluated at}
@@ -78,7 +78,7 @@ spec.parzen <- function( x,
 #'
 #' @param refL vector or matrix, reference label.
 #' @param L vector or matrix, label to be aligned.
-#' @param type what type of input format: "\code{vec}" or "\code{mat}"
+#' @param type what type of input format: "\code{vec}" or "\code{mat}", default as 'vec'.
 #' @return \code{L}, aligned against \code{refL} with maximal concordance.
 #'
 #' @examples

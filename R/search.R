@@ -9,9 +9,9 @@
 #'   "\emph{Inferring Brain Signals Synchronicity from a Sample of EEG Readings}".
 #' @param X_array list of data arrays, each of which is organized as No.objects * No.observations * No.segments.
 #' @param max_d integer, maximal value of \code{d} and \code{K} to be considered
+#' @param n.iter integer, number of iterations in \code{\link{MIC}} fitting
 #' @param par.spec vector, spectral estimation parameters the same as \code{par.spec} in \code{\link{MIC_prep}}
 #' @param par.win vector, epoch smoothing parameters see \code{\link{MIC_prep}} and \code{\link{SpecSim}}
-#' @param n.iter integer, number of iterations in \code{\link{MIC}} fitting
 #' @param unit_len boolean, whether to use normalized eigen-Laplacian in \code{\link{MIC_prep}}
 #' @return A matrix of searching trajectory
 #'   \item{\code{d}}{dimensionality}
@@ -26,7 +26,7 @@
 #'   sim <- MIC_sim(alpha = 0.9,  nsub = 10, fs = 200, segs = 10)
 #'
 #'
-#' ## d,K searching: \strong{(approx. 9 mins running time)}
+#' ## d,K searching: \strong{(approx. 3 mins running time)}
 #'   dk_search(sim$Data, max_d = 10, n.iter = 10000, par.spec = c(50,50,256), par.win = c(4,2))
 #'
 #' }
@@ -82,5 +82,6 @@ dk_search <- function(X_array,
   #   K <- cand_result[pick,2]
   # }
   rm(output)
+  colnames(result) <- c('d','K','BIC','COH')
   return(result)
 }

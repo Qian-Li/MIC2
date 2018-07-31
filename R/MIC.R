@@ -5,7 +5,7 @@
 #'   on all three levels (group/individual/repetition).
 #'
 #' @param data list of 3d arrays, each of which has the size of d(measurement dims)*p(number of units)*r(number of repetitions).
-#'  MIC requires \code{q} the same across arrays. For an admissible format, see \code{\link{MIC_prep}}.
+#'  MIC requires \code{p} the same across arrays. For an admissible format, see \code{\link{MIC_prep}}.
 #' @param K integer, number of clusters.
 #' @param nit number of iterations for MCMC sampling, with 1/5 used for burn-in.
 #' @param thin thining, default at 1 (no thinning).
@@ -32,25 +32,24 @@
 #'
 #'   # Data preparation:
 #'   list_data <- lapply(ts_sim$Data, function(x)
-#'        MIC_prep(X = x, d = 4, par.spectrum = c(50, 50, 100), par.win = c(3, 1)))
+#'        MIC_prep(X = x, d = 4, par.spec = c(50, 50, 100), par.win = c(3, 1)))
 #'
 #'
 #'   # MIC: (Running time: 11s, 30X faster than version 1)
-#'   output <- MIC(X = list_data, K = 4, NumRun = 10000)
+#'   output <- MIC(data = list_data, K = 4, nit = 10000)
 #'
 #'
 #'
 #'   # Clustering accuracy: group level (to be updated)
-#'   sum(clust_align(ts_sim$C, output$Cbest, type = 'vec') == ts_sim$C) / 40
+#'   sum(align(ts_sim$C, output$clustS, type = 'vec') == ts_sim$C) / 40
 #'   ## [1] 1
 #'
 #'
 #'   # Clustering accuracy: individual level (to be updated)
-#'   for (i in 1:3){
-#'   aligned_label <- clust_align(ts_sim$Ci[, i], output$Cibest[, i], type = 'vec')
-#'   cat(sum(aligned_label == ts_sim$Ci[, i]) / 40, '\n')
-#'   }
-#'   ## 1 1 1
+#'   true_c <- lapply(1:3,function(i) ts_sim$Ci[,i]);
+#'   est_c <- lapply(1:3,function(i) output$clustC[i,]);
+#'   mapply(function(x,y) sum(align(x,y,'vec')==x)/40, true_c, est_c);
+#'   ## [1] 1 1 1
 #' }
 #' @export
 

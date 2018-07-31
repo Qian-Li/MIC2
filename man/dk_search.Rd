@@ -42,7 +42,7 @@ Details of the procedure is available in our manuscript.
   sim <- MIC_sim(alpha = 0.9,  nsub = 10, fs = 200, segs = 10)
 
 
-## d,K searching: \\strong{(approx. 9 mins running time)}
+## d,K searching: \\strong{(approx. 3 mins running time)}
   dk_search(sim$Data, max_d = 10, n.iter = 10000, par.spec = c(50,50,256), par.win = c(4,2))
 
 }

@@ -7,12 +7,12 @@ if(F){
   set.seed(123)
   sim <- MIC_sim(alpha = 0.9,  nsub = 10, fs = 200, segs = 10)
   start <- Sys.time()
-  out <- dk_search(sim$Data, max_d = 10, n.iter = 10000, par.spectrum = c(100,50,256), par.win=c(4,2))
+  out <- dk_search(sim$Data, max_d = 10, n.iter = 10000, par.spec = c(100,50,256), par.win=c(4,2))
   out
   Sys.time() - start
   ################### simple fit ################
   for(i in 1:300){
-    set.seed(555)
+    # set.seed(555)
     ts_sim <- MIC_sim(alpha = 0.9, nsub = 3, segs = 10, fs = 200)
     list_data <- lapply(ts_sim$Data, function(x) MIC_prep(X = x, d = 4,
                             par.spec = c(100,50,100), par.win = c(2, 0), unit_len = F))

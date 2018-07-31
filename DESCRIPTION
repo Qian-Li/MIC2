@@ -1,7 +1,7 @@
 Package: MIC2
 Type: Package
 Title: MIC clustering
-Version: 2.1.0
+Version: 2.1.1
 Author: Qian Li
 Maintainer: Qian Li <qianl@ucla.edu>
 Description: MIC package performs integrative clustering on 

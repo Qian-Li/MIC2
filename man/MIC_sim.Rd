@@ -16,11 +16,11 @@ MIC_sim(alpha, nsub, segs, fs, Ct = rep(c(1, 2, 3, 4), rep(10, 4)),
 
 \item{fs}{integer, sampling frequency}
 
-\item{Ct}{vector of integers, true group labels}
+\item{Ct}{vector of integers, true group labels, defuault at 4 groups each with 10 subjects}
 
-\item{bad_sub}{integer, number of outlying subjects indexed as 1 to \code{bad_sub}}
+\item{bad_sub}{integer, number of outlying subjects indexed from 1 to \code{bad_sub}}
 
-\item{scheme}{stationarity: 0 = stationary; 1 = piecewise stationary}
+\item{scheme}{stationarity: 0(default) = stationary; 1 = piecewise stationary}
 
 \item{iSNR}{scalar, inverse of Signal-to-Noise Ratio, default at 0 (no noise)}
 }
@@ -37,19 +37,19 @@ A list of objects with the following components:
 \examples{
 \dontrun{
 # Stationary simulation:
-x_stat <- MIC_sim(alpha = 0.9, nsub = 2, segs = 10, fs = 100)
+  x_stat <- MIC_sim(alpha = 0.9, nsub = 2, segs = 10, fs = 100)
 
-# # sample adherence (alpha)
+# Sample adherence (alpha)
   sum(x_stat$C == x_stat$Ci[, 1]) / length(x_stat$C)
 
-# # stationarity
+# Change of stationarity points
   x_stat$Points
 
 
 # Non-stationary (piecewise stationary) simulation:
 
-x_nstat <- MIC_sim(alpha = 0.9, nsub = 2, segs = 10, fs = 100)
-x_nstat$Points
+  x_nstat <- MIC_sim(alpha = 0.9, nsub = 2, segs = 10, fs = 100)
+  x_nstat$Points
 }
 }
 \references{

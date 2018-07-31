@@ -12,7 +12,7 @@ spec.parzen(x, a = length(x) - 1, nn = 512)
 \item{a}{integer, max lag to truncate the sample ACF estimates, default \code{length(x)-1} (no truncation).
 It has to be smaller than the length fo time seires \code{x}.}
 
-\item{nn}{integer, resolution of the spectral estimates (number of points on frequency domain).}
+\item{nn}{integer, resolution of the spectral estimates (number of points on frequency domain), default at 512}
 }
 \value{
 List of the following items:
